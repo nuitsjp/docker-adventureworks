@@ -36,7 +36,7 @@
  * 3. Copy this script and the install files to C:\Samples\AdventureWorks, or
  *    set the following environment variable to your own data path.
  */
- :setvar SqlSamplesSourceDataPath "C:\Samples\AdventureWorks\"
+ :setvar SqlSamplesSourceDataPath "/work/"
 
 /*
  * 4. Append the SQL Server version number to database name if you want to
@@ -1803,7 +1803,7 @@ PRINT 'Loading [Person].[Address]';
 BULK INSERT [Person].[Address] FROM '$(SqlSamplesSourceDataPath)Address.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE = 'char',
     FIELDTERMINATOR= '\t',
     ROWTERMINATOR = '\n',
@@ -1817,7 +1817,7 @@ PRINT 'Loading [Person].[AddressType]';
 BULK INSERT [Person].[AddressType] FROM '$(SqlSamplesSourceDataPath)AddressType.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE = 'char',
     FIELDTERMINATOR= '\t',
     ROWTERMINATOR = '\n',
@@ -1839,7 +1839,7 @@ PRINT 'Loading [Production].[BillOfMaterials]';
 BULK INSERT [Production].[BillOfMaterials] FROM '$(SqlSamplesSourceDataPath)BillOfMaterials.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE = 'char',
     FIELDTERMINATOR= '\t',
     ROWTERMINATOR = '\n',
@@ -1853,7 +1853,7 @@ PRINT 'Loading [Person].[BusinessEntity]';
 BULK INSERT [Person].[BusinessEntity] FROM '$(SqlSamplesSourceDataPath)BusinessEntity.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -1866,7 +1866,7 @@ PRINT 'Loading [Person].[BusinessEntityAddress]';
 BULK INSERT [Person].[BusinessEntityAddress] FROM '$(SqlSamplesSourceDataPath)BusinessEntityAddress.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -1879,7 +1879,7 @@ PRINT 'Loading [Person].[BusinessEntityContact]';
 BULK INSERT [Person].[BusinessEntityContact] FROM '$(SqlSamplesSourceDataPath)BusinessEntityContact.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -1892,7 +1892,7 @@ PRINT 'Loading [Person].[ContactType]';
 BULK INSERT [Person].[ContactType] FROM '$(SqlSamplesSourceDataPath)ContactType.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1905,7 +1905,7 @@ PRINT 'Loading [Person].[CountryRegion]';
 BULK INSERT [Person].[CountryRegion] FROM '$(SqlSamplesSourceDataPath)CountryRegion.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1918,7 +1918,7 @@ PRINT 'Loading [Sales].[CountryRegionCurrency]';
 BULK INSERT [Sales].[CountryRegionCurrency] FROM '$(SqlSamplesSourceDataPath)CountryRegionCurrency.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1931,7 +1931,7 @@ PRINT 'Loading [Sales].[CreditCard]';
 BULK INSERT [Sales].[CreditCard] FROM '$(SqlSamplesSourceDataPath)CreditCard.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1944,7 +1944,7 @@ PRINT 'Loading [Production].[Culture]';
 BULK INSERT [Production].[Culture] FROM '$(SqlSamplesSourceDataPath)Culture.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1957,7 +1957,7 @@ PRINT 'Loading [Sales].[Currency]';
 BULK INSERT [Sales].[Currency] FROM '$(SqlSamplesSourceDataPath)Currency.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1970,7 +1970,7 @@ PRINT 'Loading [Sales].[CurrencyRate]';
 BULK INSERT [Sales].[CurrencyRate] FROM '$(SqlSamplesSourceDataPath)CurrencyRate.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1984,7 +1984,7 @@ PRINT 'Loading [Sales].[Customer]';
 BULK INSERT [Sales].[Customer] FROM '$(SqlSamplesSourceDataPath)Customer.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -1999,7 +1999,7 @@ PRINT 'Loading [HumanResources].[Department]';
 BULK INSERT [HumanResources].[Department] FROM '$(SqlSamplesSourceDataPath)Department.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2013,7 +2013,7 @@ PRINT 'Loading [Production].[Document]';
 BULK INSERT [Production].[Document] FROM '$(SqlSamplesSourceDataPath)Document.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2027,7 +2027,7 @@ PRINT 'Loading [Person].[EmailAddress]';
 BULK INSERT [Person].[EmailAddress] FROM '$(SqlSamplesSourceDataPath)EmailAddress.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2040,7 +2040,7 @@ PRINT 'Loading [HumanResources].[Employee]';
 BULK INSERT [HumanResources].[Employee] FROM '$(SqlSamplesSourceDataPath)Employee.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2053,7 +2053,7 @@ PRINT 'Loading [HumanResources].[EmployeeDepartmentHistory]';
 BULK INSERT [HumanResources].[EmployeeDepartmentHistory] FROM '$(SqlSamplesSourceDataPath)EmployeeDepartmentHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2066,7 +2066,7 @@ PRINT 'Loading [HumanResources].[EmployeePayHistory]';
 BULK INSERT [HumanResources].[EmployeePayHistory] FROM '$(SqlSamplesSourceDataPath)EmployeePayHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2080,7 +2080,7 @@ PRINT 'Loading [Production].[Illustration]';
 BULK INSERT [Production].[Illustration] FROM '$(SqlSamplesSourceDataPath)Illustration.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2094,7 +2094,7 @@ PRINT 'Loading [HumanResources].[JobCandidate]';
 BULK INSERT [HumanResources].[JobCandidate] FROM '$(SqlSamplesSourceDataPath)JobCandidate.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2109,7 +2109,7 @@ PRINT 'Loading [Production].[Location]';
 BULK INSERT [Production].[Location] FROM '$(SqlSamplesSourceDataPath)Location.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2123,7 +2123,7 @@ PRINT 'Loading [Person].[Password]';
 BULK INSERT [Person].[Password] FROM '$(SqlSamplesSourceDataPath)Password.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2136,7 +2136,7 @@ PRINT 'Loading [Person].[Person]';
 BULK INSERT [Person].[Person] FROM '$(SqlSamplesSourceDataPath)Person.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2149,7 +2149,7 @@ PRINT 'Loading [Sales].[PersonCreditCard]';
 BULK INSERT [Sales].[PersonCreditCard] FROM '$(SqlSamplesSourceDataPath)PersonCreditCard.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2162,7 +2162,7 @@ PRINT 'Loading [Person].[PersonPhone]';
 BULK INSERT [Person].[PersonPhone] FROM '$(SqlSamplesSourceDataPath)PersonPhone.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2175,7 +2175,7 @@ PRINT 'Loading [Person].[PhoneNumberType]';
 BULK INSERT [Person].[PhoneNumberType] FROM '$(SqlSamplesSourceDataPath)PhoneNumberType.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2189,7 +2189,7 @@ PRINT 'Loading [Production].[Product]';
 BULK INSERT [Production].[Product] FROM '$(SqlSamplesSourceDataPath)Product.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2202,7 +2202,7 @@ PRINT 'Loading [Production].[ProductCategory]';
 BULK INSERT [Production].[ProductCategory] FROM '$(SqlSamplesSourceDataPath)ProductCategory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2215,7 +2215,7 @@ PRINT 'Loading [Production].[ProductCostHistory]';
 BULK INSERT [Production].[ProductCostHistory] FROM '$(SqlSamplesSourceDataPath)ProductCostHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2228,7 +2228,7 @@ PRINT 'Loading [Production].[ProductDescription]';
 BULK INSERT [Production].[ProductDescription] FROM '$(SqlSamplesSourceDataPath)ProductDescription.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2241,7 +2241,7 @@ PRINT 'Loading [Production].[ProductDocument]';
 BULK INSERT [Production].[ProductDocument] FROM '$(SqlSamplesSourceDataPath)ProductDocument.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2254,7 +2254,7 @@ PRINT 'Loading [Production].[ProductInventory]';
 BULK INSERT [Production].[ProductInventory] FROM '$(SqlSamplesSourceDataPath)ProductInventory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2267,7 +2267,7 @@ PRINT 'Loading [Production].[ProductListPriceHistory]';
 BULK INSERT [Production].[ProductListPriceHistory] FROM '$(SqlSamplesSourceDataPath)ProductListPriceHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2280,7 +2280,7 @@ PRINT 'Loading [Production].[ProductModel]';
 BULK INSERT [Production].[ProductModel] FROM '$(SqlSamplesSourceDataPath)ProductModel.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2293,7 +2293,7 @@ PRINT 'Loading [Production].[ProductModelIllustration]';
 BULK INSERT [Production].[ProductModelIllustration] FROM '$(SqlSamplesSourceDataPath)ProductModelIllustration.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2306,7 +2306,7 @@ PRINT 'Loading [Production].[ProductModelProductDescriptionCulture]';
 BULK INSERT [Production].[ProductModelProductDescriptionCulture] FROM '$(SqlSamplesSourceDataPath)ProductModelProductDescriptionCulture.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2319,7 +2319,7 @@ PRINT 'Loading [Production].[ProductPhoto]';
 BULK INSERT [Production].[ProductPhoto] FROM '$(SqlSamplesSourceDataPath)ProductPhoto.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2332,7 +2332,7 @@ PRINT 'Loading [Production].[ProductProductPhoto]';
 BULK INSERT [Production].[ProductProductPhoto] FROM '$(SqlSamplesSourceDataPath)ProductProductPhoto.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2345,7 +2345,7 @@ PRINT 'Loading [Production].[ProductReview]';
 BULK INSERT [Production].[ProductReview] FROM '$(SqlSamplesSourceDataPath)ProductReview.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2358,7 +2358,7 @@ PRINT 'Loading [Production].[ProductSubcategory]';
 BULK INSERT [Production].[ProductSubcategory] FROM '$(SqlSamplesSourceDataPath)ProductSubcategory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2372,7 +2372,7 @@ PRINT 'Loading [Purchasing].[ProductVendor]';
 BULK INSERT [Purchasing].[ProductVendor] FROM '$(SqlSamplesSourceDataPath)ProductVendor.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2386,7 +2386,7 @@ PRINT 'Loading [Purchasing].[PurchaseOrderDetail]';
 BULK INSERT [Purchasing].[PurchaseOrderDetail] FROM '$(SqlSamplesSourceDataPath)PurchaseOrderDetail.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2399,7 +2399,7 @@ PRINT 'Loading [Purchasing].[PurchaseOrderHeader]';
 BULK INSERT [Purchasing].[PurchaseOrderHeader] FROM '$(SqlSamplesSourceDataPath)PurchaseOrderHeader.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2412,7 +2412,7 @@ PRINT 'Loading [Sales].[SalesOrderDetail]';
 BULK INSERT [Sales].[SalesOrderDetail] FROM '$(SqlSamplesSourceDataPath)SalesOrderDetail.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2425,7 +2425,7 @@ PRINT 'Loading [Sales].[SalesOrderHeader]';
 BULK INSERT [Sales].[SalesOrderHeader] FROM '$(SqlSamplesSourceDataPath)SalesOrderHeader.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2439,7 +2439,7 @@ PRINT 'Loading [Sales].[SalesOrderHeaderSalesReason]';
 BULK INSERT [Sales].[SalesOrderHeaderSalesReason] FROM '$(SqlSamplesSourceDataPath)SalesOrderHeaderSalesReason.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2453,7 +2453,7 @@ PRINT 'Loading [Sales].[SalesPerson]';
 BULK INSERT [Sales].[SalesPerson] FROM '$(SqlSamplesSourceDataPath)SalesPerson.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2467,7 +2467,7 @@ PRINT 'Loading [Sales].[SalesPersonQuotaHistory]';
 BULK INSERT [Sales].[SalesPersonQuotaHistory] FROM '$(SqlSamplesSourceDataPath)SalesPersonQuotaHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2481,7 +2481,7 @@ PRINT 'Loading [Sales].[SalesReason]';
 BULK INSERT [Sales].[SalesReason] FROM '$(SqlSamplesSourceDataPath)SalesReason.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2494,7 +2494,7 @@ PRINT 'Loading [Sales].[SalesTaxRate]';
 BULK INSERT [Sales].[SalesTaxRate] FROM '$(SqlSamplesSourceDataPath)SalesTaxRate.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2507,7 +2507,7 @@ PRINT 'Loading [Sales].[SalesTerritory]';
 BULK INSERT [Sales].[SalesTerritory] FROM '$(SqlSamplesSourceDataPath)SalesTerritory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2520,7 +2520,7 @@ PRINT 'Loading [Sales].[SalesTerritoryHistory]';
 BULK INSERT [Sales].[SalesTerritoryHistory] FROM '$(SqlSamplesSourceDataPath)SalesTerritoryHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2534,7 +2534,7 @@ PRINT 'Loading [Production].[ScrapReason]';
 BULK INSERT [Production].[ScrapReason] FROM '$(SqlSamplesSourceDataPath)ScrapReason.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2547,7 +2547,7 @@ PRINT 'Loading [HumanResources].[Shift]';
 BULK INSERT [HumanResources].[Shift] FROM '$(SqlSamplesSourceDataPath)Shift.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2560,7 +2560,7 @@ PRINT 'Loading [Purchasing].[ShipMethod]';
 BULK INSERT [Purchasing].[ShipMethod] FROM '$(SqlSamplesSourceDataPath)ShipMethod.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2573,7 +2573,7 @@ PRINT 'Loading [Sales].[ShoppingCartItem]';
 BULK INSERT [Sales].[ShoppingCartItem] FROM '$(SqlSamplesSourceDataPath)ShoppingCartItem.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2586,7 +2586,7 @@ PRINT 'Loading [Sales].[SpecialOffer]';
 BULK INSERT [Sales].[SpecialOffer] FROM '$(SqlSamplesSourceDataPath)SpecialOffer.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2599,7 +2599,7 @@ PRINT 'Loading [Sales].[SpecialOfferProduct]';
 BULK INSERT [Sales].[SpecialOfferProduct] FROM '$(SqlSamplesSourceDataPath)SpecialOfferProduct.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2612,7 +2612,7 @@ PRINT 'Loading [Person].[StateProvince]';
 BULK INSERT [Person].[StateProvince] FROM '$(SqlSamplesSourceDataPath)StateProvince.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2625,7 +2625,7 @@ PRINT 'Loading [Sales].[Store]';
 BULK INSERT [Sales].[Store] FROM '$(SqlSamplesSourceDataPath)Store.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='widechar',
     FIELDTERMINATOR='+|',
     ROWTERMINATOR='&|\n',
@@ -2639,7 +2639,7 @@ PRINT 'Loading [Production].[TransactionHistory]';
 BULK INSERT [Production].[TransactionHistory] FROM '$(SqlSamplesSourceDataPath)TransactionHistory.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2651,7 +2651,7 @@ PRINT 'Loading [Production].[TransactionHistoryArchive]';
 BULK INSERT [Production].[TransactionHistoryArchive] FROM '$(SqlSamplesSourceDataPath)TransactionHistoryArchive.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2664,7 +2664,7 @@ PRINT 'Loading [Production].[UnitMeasure]';
 BULK INSERT [Production].[UnitMeasure] FROM '$(SqlSamplesSourceDataPath)UnitMeasure.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2677,7 +2677,7 @@ PRINT 'Loading [Purchasing].[Vendor]';
 BULK INSERT [Purchasing].[Vendor] FROM '$(SqlSamplesSourceDataPath)Vendor.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2690,7 +2690,7 @@ PRINT 'Loading [Production].[WorkOrder]';
 BULK INSERT [Production].[WorkOrder] FROM '$(SqlSamplesSourceDataPath)WorkOrder.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -2703,7 +2703,7 @@ PRINT 'Loading [Production].[WorkOrderRouting]';
 BULK INSERT [Production].[WorkOrderRouting] FROM '$(SqlSamplesSourceDataPath)WorkOrderRouting.csv'
 WITH (
     CHECK_CONSTRAINTS,
-    CODEPAGE='ACP',
+    --CODEPAGE='ACP',
     DATAFILETYPE='char',
     FIELDTERMINATOR='\t',
     ROWTERMINATOR='\n',
@@ -3515,21 +3515,21 @@ GO
 
 --This creates a FULLTEXT INDEX on ProductReview table. The index will cover the column 'Comments' which contains plain text data.
 
-CREATE FULLTEXT INDEX ON Production.ProductReview(Comments) KEY INDEX PK_ProductReview_ProductReviewID;
+--CREATE FULLTEXT INDEX ON Production.ProductReview(Comments) KEY INDEX PK_ProductReview_ProductReviewID;
 GO
 
 --This creates a FULLTEXT INDEX on JobCandidate table. The index will cover the column 'Resume' which contains XML data related with the candidates
 --resumes.This is a good example of how iFTS will automatically call the XML filter in order to parse the data and store the information into the FTIndex
 --created. No data type column is needed in this case as the datatype already provides the needed information
 
-CREATE FULLTEXT INDEX ON HumanResources.JobCandidate(Resume) KEY INDEX PK_JobCandidate_JobCandidateID;
+--CREATE FULLTEXT INDEX ON HumanResources.JobCandidate(Resume) KEY INDEX PK_JobCandidate_JobCandidateID;
 GO
 
 --This creates a FULLTEXT INDEX on Document table. The index will cover the columns 'Document' and ‘DocumentSummary’. Note that the column ‘Document’
 --contains binary data on a format specified by the 'FileExtension' column.This is a good example of how iFTS will automatically call the need 
 --iFilter associated with the 'FileExtension'associated with each row/document (in this case, all are .doc, which should be loaded into SQL from the OS by default)
 
-CREATE FULLTEXT INDEX ON Production.Document(Document TYPE COLUMN FileExtension, DocumentSummary) KEY INDEX PK_Document_DocumentNode;
+--CREATE FULLTEXT INDEX ON Production.Document(Document TYPE COLUMN FileExtension, DocumentSummary) KEY INDEX PK_Document_DocumentNode;
 GO
 
 
@@ -5887,60 +5887,60 @@ GO
 
 --A stored procedure which demonstrates integrated full text search
 
-CREATE PROCEDURE [dbo].[uspSearchCandidateResumes]
-    @searchString [nvarchar](1000),   
-    @useInflectional [bit]=0,
-    @useThesaurus [bit]=0,
-    @language[int]=0
+--CREATE PROCEDURE [dbo].[uspSearchCandidateResumes]
+--    @searchString [nvarchar](1000),   
+--    @useInflectional [bit]=0,
+--    @useThesaurus [bit]=0,
+--    @language[int]=0
 
 
-WITH EXECUTE AS CALLER
-AS
-BEGIN
-    SET NOCOUNT ON;
+--WITH EXECUTE AS CALLER
+--AS
+--BEGIN
+--    SET NOCOUNT ON;
 
-      DECLARE @string nvarchar(1050)
-      --setting the lcid to the default instance LCID if needed
-      IF @language = NULL OR @language = 0 
-      BEGIN 
-            SELECT @language =CONVERT(int, serverproperty('lcid'))  
-      END
+--      DECLARE @string nvarchar(1050)
+--      --setting the lcid to the default instance LCID if needed
+--      IF @language = NULL OR @language = 0 
+--      BEGIN 
+--            SELECT @language =CONVERT(int, serverproperty('lcid'))  
+--      END
       
 
-            --FREETEXTTABLE case as inflectional and Thesaurus were required
-      IF @useThesaurus = 1 AND @useInflectional = 1  
-        BEGIN
-                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
-                        INNER JOIN FREETEXTTABLE([HumanResources].[JobCandidate],*, @searchString,LANGUAGE @language) AS KEY_TBL
-                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
-            END
+--            --FREETEXTTABLE case as inflectional and Thesaurus were required
+--      IF @useThesaurus = 1 AND @useInflectional = 1  
+--        BEGIN
+--                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
+--                        INNER JOIN FREETEXTTABLE([HumanResources].[JobCandidate],*, @searchString,LANGUAGE @language) AS KEY_TBL
+--                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
+--            END
 
-      ELSE IF @useThesaurus = 1
-            BEGIN
-                  SELECT @string ='FORMSOF(THESAURUS,"'+@searchString +'"'+')'      
-                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
-                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*, @string,LANGUAGE @language) AS KEY_TBL
-                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
-        END
+--      ELSE IF @useThesaurus = 1
+--            BEGIN
+--                  SELECT @string ='FORMSOF(THESAURUS,"'+@searchString +'"'+')'      
+--                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
+--                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*, @string,LANGUAGE @language) AS KEY_TBL
+--                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
+--        END
 
-      ELSE IF @useInflectional = 1
-            BEGIN
-                  SELECT @string ='FORMSOF(INFLECTIONAL,"'+@searchString +'"'+')'
-                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
-                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*, @string,LANGUAGE @language) AS KEY_TBL
-                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
-        END
+--      ELSE IF @useInflectional = 1
+--            BEGIN
+--                  SELECT @string ='FORMSOF(INFLECTIONAL,"'+@searchString +'"'+')'
+--                  SELECT FT_TBL.[JobCandidateID], KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
+--                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*, @string,LANGUAGE @language) AS KEY_TBL
+--                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
+--        END
   
-      ELSE --base case, plain CONTAINSTABLE
-            BEGIN
-                  SELECT @string='"'+@searchString +'"'
-                  SELECT FT_TBL.[JobCandidateID],KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
-                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*,@string,LANGUAGE @language) AS KEY_TBL
-                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
-            END
+--      ELSE --base case, plain CONTAINSTABLE
+--            BEGIN
+--                  SELECT @string='"'+@searchString +'"'
+--                  SELECT FT_TBL.[JobCandidateID],KEY_TBL.[RANK] FROM [HumanResources].[JobCandidate] AS FT_TBL 
+--                        INNER JOIN CONTAINSTABLE([HumanResources].[JobCandidate],*,@string,LANGUAGE @language) AS KEY_TBL
+--                   ON  FT_TBL.[JobCandidateID] =KEY_TBL.[KEY]
+--            END
 
-END;
-GO
+--END;
+--GO
 
 -- ******************************************************
 -- Add Extended Properties
@@ -6196,10 +6196,10 @@ EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Illustrations used i
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Date and time the record was last updated.', N'SCHEMA', [Production], N'TABLE', [Illustration], N'COLUMN', [ModifiedDate];
 GO
 
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Résumés submitted to Human Resources by job applicants.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], NULL, NULL;
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'R?sum?s submitted to Human Resources by job applicants.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], NULL, NULL;
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key for JobCandidate records.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], N'COLUMN', [JobCandidateID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], N'COLUMN', [BusinessEntityID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Résumé in XML format.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], N'COLUMN', [Resume];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'R?sum? in XML format.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], N'COLUMN', [Resume];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Date and time the record was last updated.', N'SCHEMA', [HumanResources], N'TABLE', [JobCandidate], N'COLUMN', [ModifiedDate];
 GO
 
