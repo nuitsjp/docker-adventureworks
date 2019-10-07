@@ -2,6 +2,8 @@
 
 SQL Serverのサンプルデータベース「AdventureWorks」をDocker上のSQLサーバーで利用するためのコンテナイメージです。
 
+[https://cloud.docker.com/u/nuitsjp/repository/docker/nuitsjp/adventureworks](https://cloud.docker.com/u/nuitsjp/repository/docker/nuitsjp/adventureworks)
+
 ## 前提条件
 
 現在、動作確認しているのは以下の環境のみです。
