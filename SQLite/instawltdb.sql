@@ -10,6 +10,7 @@ drop table ProductCategory;
 drop table ProductDescription;
 drop table ProductModel;
 drop table ProductModelProductDescription;
+drop table SalesOrderDetail;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,18 +115,13 @@ CREATE TABLE [ProductModelProductDescription](
 CREATE TABLE [SalesOrderDetail](
     [SalesOrderID] INTEGER NOT NULL,
     [SalesOrderDetailID] INTEGER IDENTITY (1, 1) NOT NULL,
-    [OrderQty] [smallint] NOT NULL,
+    [OrderQty] INTEGER NOT NULL,
     [ProductID] INTEGER NOT NULL,
     [UnitPrice] INTEGER NOT NULL,
-    [UnitPriceDiscount] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderDetail_UnitPriceDiscount] DEFAULT (0.0),
-    [LineTotal] AS ISNULL([UnitPrice] * (1.0 - [UnitPriceDiscount]) * [OrderQty], 0.0),
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderDetail_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderDetail_ModifiedDate] DEFAULT (datetime('now')), 
-    CONSTRAINT [CK_SalesOrderDetail_OrderQty] CHECK ([OrderQty] > 0), 
-    CONSTRAINT [CK_SalesOrderDetail_UnitPrice] CHECK ([UnitPrice] >= 0.00), 
-    CONSTRAINT [CK_SalesOrderDetail_UnitPriceDiscount] CHECK ([UnitPriceDiscount] >= 0.00) 
+    [UnitPriceDiscount] INTEGER NOT NULL DEFAULT (0.0),
+    --[LineTotal] AS ISNULL([UnitPrice] * (1.0 - [UnitPriceDiscount]) * [OrderQty], 0.0),
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
-GO
 
 CREATE TABLE [SalesOrderHeader](
     [SalesOrderID] INTEGER PRIMARY KEY AUTOINCREMENT,
