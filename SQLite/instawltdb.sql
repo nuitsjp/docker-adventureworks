@@ -3,6 +3,7 @@ select 'drop table ' || name || ';' from sqlite_master where type = 'table' and 
 drop table ErrorLog;
 drop table BuildVersion;
 drop table Address;
+drop table Customer;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
