@@ -5,6 +5,7 @@ drop table BuildVersion;
 drop table Address;
 drop table Customer;
 drop table CustomerAddress;
+drop table Product;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,22 +69,16 @@ CREATE TABLE [Product](
     [StandardCost] INTEGER NOT NULL,
     [ListPrice] INTEGER NOT NULL,
     [Size] TEXT NULL, 
-    [Weight] [decimal](8, 2) NULL,
+    [Weight] INTEGER NULL,
     [ProductCategoryID] INTEGER NULL,
     [ProductModelID] INTEGER NULL,
     [SellStartDate] DATETIME NOT NULL,
     [SellEndDate] DATETIME NULL,
     [DiscontinuedDate] DATETIME NULL,
-    [ThumbNailPhoto] [varbinary](max) NULL,
-    [ThumbnailPhotoFileName] [nvarchar](50) NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Product_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_Product_ModifiedDate] DEFAULT (datetime('now')),
-    CONSTRAINT [CK_Product_StandardCost] CHECK ([StandardCost] >= 0.00),
-    CONSTRAINT [CK_Product_ListPrice] CHECK ([ListPrice] >= 0.00),
-    CONSTRAINT [CK_Product_Weight] CHECK ([Weight] > 0.00),
-    CONSTRAINT [CK_Product_SellEndDate] CHECK (([SellEndDate] >= [SellStartDate]) OR ([SellEndDate] IS NULL)),
+    [ThumbNailPhoto] BLOB NULL,
+    [ThumbnailPhotoFileName] TEXT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
-GO
 
 CREATE TABLE [ProductCategory](
     [ProductCategoryID] INTEGER IDENTITY (1, 1) NOT NULL,
