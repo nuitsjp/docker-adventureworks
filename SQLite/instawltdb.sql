@@ -4,6 +4,7 @@ drop table ErrorLog;
 drop table BuildVersion;
 drop table Address;
 drop table Customer;
+drop table CustomerAddress;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,35 +50,34 @@ CREATE TABLE [Customer](
     [Phone] TEXT NULL, 
     [PasswordHash] TEXT NOT NULL, 
     [PasswordSalt] TEXT NOT NULL,
-    [ModifiedDate] [datetime] NOT NULL DEFAULT (datetime('now'))
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE [CustomerAddress](
 	[CustomerID] INTEGER NOT NULL,
 	[AddressID] INTEGER NOT NULL,
 	[AddressType] TEXT NOT NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_CustomerAddress_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_CustomerAddress_ModifiedDate] DEFAULT (datetime('now')), 
-)	
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+);
 
 CREATE TABLE [Product](
     [ProductID] INTEGER IDENTITY (1, 1) NOT NULL,
-    TEXT TEXT NOT NULL,
-    [ProductNumber] [nvarchar](25) NOT NULL, 
-    [Color] [nvarchar](15) NULL, 
-    [StandardCost] [money] NOT NULL,
-    [ListPrice] [money] NOT NULL,
-    [Size] [nvarchar](5) NULL, 
+    [Name] TEXT NOT NULL,
+    [ProductNumber] TEXT NOT NULL, 
+    [Color] TEXT NULL, 
+    [StandardCost] INTEGER NOT NULL,
+    [ListPrice] INTEGER NOT NULL,
+    [Size] TEXT NULL, 
     [Weight] [decimal](8, 2) NULL,
     [ProductCategoryID] INTEGER NULL,
     [ProductModelID] INTEGER NULL,
-    [SellStartDate] [datetime] NOT NULL,
-    [SellEndDate] [datetime] NULL,
-    [DiscontinuedDate] [datetime] NULL,
+    [SellStartDate] DATETIME NOT NULL,
+    [SellEndDate] DATETIME NULL,
+    [DiscontinuedDate] DATETIME NULL,
     [ThumbNailPhoto] [varbinary](max) NULL,
     [ThumbnailPhotoFileName] [nvarchar](50) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Product_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Product_ModifiedDate] DEFAULT (datetime('now')),
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_Product_ModifiedDate] DEFAULT (datetime('now')),
     CONSTRAINT [CK_Product_StandardCost] CHECK ([StandardCost] >= 0.00),
     CONSTRAINT [CK_Product_ListPrice] CHECK ([ListPrice] >= 0.00),
     CONSTRAINT [CK_Product_Weight] CHECK ([Weight] > 0.00),
@@ -90,7 +90,7 @@ CREATE TABLE [ProductCategory](
 	[ParentProductCategoryID] INTEGER NULL,
     TEXT TEXT NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductCategory_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductCategory_ModifiedDate] DEFAULT (datetime('now')) 
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductCategory_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
 
@@ -99,7 +99,7 @@ CREATE TABLE [ProductDescription](
     [ProductDescriptionID] INTEGER IDENTITY (1, 1) NOT NULL,
     [Description] [nvarchar](400) NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
 
@@ -108,7 +108,7 @@ CREATE TABLE [ProductModel](
     TEXT TEXT NOT NULL,
     [CatalogDescription] [XML]([ProductDescriptionSchemaCollection]) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModel_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
 
@@ -119,7 +119,7 @@ CREATE TABLE [ProductModelProductDescription](
     [ProductDescriptionID] INTEGER NOT NULL,
     [Culture] [nchar](6) NOT NULL, 
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModelProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModelProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductModelProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
 
@@ -128,11 +128,11 @@ CREATE TABLE [SalesOrderDetail](
     [SalesOrderDetailID] INTEGER IDENTITY (1, 1) NOT NULL,
     [OrderQty] [smallint] NOT NULL,
     [ProductID] INTEGER NOT NULL,
-    [UnitPrice] [money] NOT NULL,
-    [UnitPriceDiscount] [money] NOT NULL CONSTRAINT [DF_SalesOrderDetail_UnitPriceDiscount] DEFAULT (0.0),
+    [UnitPrice] INTEGER NOT NULL,
+    [UnitPriceDiscount] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderDetail_UnitPriceDiscount] DEFAULT (0.0),
     [LineTotal] AS ISNULL([UnitPrice] * (1.0 - [UnitPriceDiscount]) * [OrderQty], 0.0),
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderDetail_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderDetail_ModifiedDate] DEFAULT (datetime('now')), 
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderDetail_ModifiedDate] DEFAULT (datetime('now')), 
     CONSTRAINT [CK_SalesOrderDetail_OrderQty] CHECK ([OrderQty] > 0), 
     CONSTRAINT [CK_SalesOrderDetail_UnitPrice] CHECK ([UnitPrice] >= 0.00), 
     CONSTRAINT [CK_SalesOrderDetail_UnitPriceDiscount] CHECK ([UnitPriceDiscount] >= 0.00) 
@@ -142,9 +142,9 @@ GO
 CREATE TABLE [SalesOrderHeader](
     [SalesOrderID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [RevisionNumber] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_RevisionNumber] DEFAULT (0),
-    [OrderDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (datetime('now')),
-    [DueDate] [datetime] NOT NULL,
-    [ShipDate] [datetime] NULL,
+    [OrderDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (datetime('now')),
+    [DueDate] DATETIME NOT NULL,
+    [ShipDate] DATETIME NULL,
     [Status] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_Status] DEFAULT (1),
     [OnlineOrderFlag] [Flag] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OnlineOrderFlag] DEFAULT (1),
     [SalesOrderNumber] AS ISNULL(N'SO' + CONVERT(nvarchar(23), [SalesOrderID]), N'*** ERROR ***'), 
@@ -155,13 +155,13 @@ CREATE TABLE [SalesOrderHeader](
 	[BillToAddressID] int,
     [ShipMethod] [nvarchar](50) NOT NULL,
     [CreditCardApprovalCode] [varchar](15) NULL,    
-    [SubTotal] [money] NOT NULL CONSTRAINT [DF_SalesOrderHeader_SubTotal] DEFAULT (0.00),
-    [TaxAmt] [money] NOT NULL CONSTRAINT [DF_SalesOrderHeader_TaxAmt] DEFAULT (0.00),
-    [Freight] [money] NOT NULL CONSTRAINT [DF_SalesOrderHeader_Freight] DEFAULT (0.00),
+    [SubTotal] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_SubTotal] DEFAULT (0.00),
+    [TaxAmt] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_TaxAmt] DEFAULT (0.00),
+    [Freight] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_Freight] DEFAULT (0.00),
     [TotalDue] AS ISNULL([SubTotal] + [TaxAmt] + [Freight], 0),
     [Comment] [nvarchar](max) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderHeader_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_ModifiedDate] DEFAULT (datetime('now')),
+    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderHeader_ModifiedDate] DEFAULT (datetime('now')),
     CONSTRAINT [CK_SalesOrderHeader_Status] CHECK ([Status] BETWEEN 0 AND 8), 
     CONSTRAINT [CK_SalesOrderHeader_DueDate] CHECK ([DueDate] >= [OrderDate]), 
     CONSTRAINT [CK_SalesOrderHeader_ShipDate] CHECK (([ShipDate] >= [OrderDate]) OR ([ShipDate] IS NULL)), 
