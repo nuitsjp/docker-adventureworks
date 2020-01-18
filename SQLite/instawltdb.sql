@@ -11,6 +11,7 @@ drop table ProductDescription;
 drop table ProductModel;
 drop table ProductModelProductDescription;
 drop table SalesOrderDetail;
+drop table SalesOrderHeader;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,35 +126,27 @@ CREATE TABLE [SalesOrderDetail](
 
 CREATE TABLE [SalesOrderHeader](
     [SalesOrderID] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [RevisionNumber] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_RevisionNumber] DEFAULT (0),
+    [RevisionNumber] INTEGER NOT NULL DEFAULT (0),
     [OrderDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (datetime('now')),
     [DueDate] DATETIME NOT NULL,
     [ShipDate] DATETIME NULL,
-    [Status] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_Status] DEFAULT (1),
-    [OnlineOrderFlag] [Flag] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OnlineOrderFlag] DEFAULT (1),
-    [SalesOrderNumber] AS ISNULL(N'SO' + CONVERT(nvarchar(23), [SalesOrderID]), N'*** ERROR ***'), 
-    [PurchaseOrderNumber] [OrderNumber] NULL,
-    [AccountNumber] [AccountNumber] NULL,
+    [Status] INTEGER NOT NULL DEFAULT (1),
+    [OnlineOrderFlag] INTEGER NOT NULL DEFAULT (1),
+    --[SalesOrderNumber] AS ISNULL(N'SO' + CONVERT(nvarchar(23), [SalesOrderID]), N'*** ERROR ***'), 
+    [PurchaseOrderNumber] INTEGER NULL,
+    [AccountNumber] TEXT NULL,
     [CustomerID] INTEGER NOT NULL,
 	[ShipToAddressID] int,
 	[BillToAddressID] int,
-    [ShipMethod] [nvarchar](50) NOT NULL,
-    [CreditCardApprovalCode] [varchar](15) NULL,    
-    [SubTotal] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_SubTotal] DEFAULT (0.00),
-    [TaxAmt] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_TaxAmt] DEFAULT (0.00),
-    [Freight] INTEGER NOT NULL CONSTRAINT [DF_SalesOrderHeader_Freight] DEFAULT (0.00),
-    [TotalDue] AS ISNULL([SubTotal] + [TaxAmt] + [Freight], 0),
-    [Comment] [nvarchar](max) NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderHeader_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_SalesOrderHeader_ModifiedDate] DEFAULT (datetime('now')),
-    CONSTRAINT [CK_SalesOrderHeader_Status] CHECK ([Status] BETWEEN 0 AND 8), 
-    CONSTRAINT [CK_SalesOrderHeader_DueDate] CHECK ([DueDate] >= [OrderDate]), 
-    CONSTRAINT [CK_SalesOrderHeader_ShipDate] CHECK (([ShipDate] >= [OrderDate]) OR ([ShipDate] IS NULL)), 
-    CONSTRAINT [CK_SalesOrderHeader_SubTotal] CHECK ([SubTotal] >= 0.00), 
-    CONSTRAINT [CK_SalesOrderHeader_TaxAmt] CHECK ([TaxAmt] >= 0.00), 
-    CONSTRAINT [CK_SalesOrderHeader_Freight] CHECK ([Freight] >= 0.00) 
+    [ShipMethod] TEXT NOT NULL,
+    [CreditCardApprovalCode] TEXT NULL,    
+    [SubTotal] INTEGER NOT NULL DEFAULT (0.00),
+    [TaxAmt] INTEGER NOT NULL DEFAULT (0.00),
+    [Freight] INTEGER NOT NULL DEFAULT (0.00),
+    --[TotalDue] AS ISNULL([SubTotal] + [TaxAmt] + [Freight], 0),
+    [Comment] TEXT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
-GO
 
 
 
