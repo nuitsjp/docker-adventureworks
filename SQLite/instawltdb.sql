@@ -8,6 +8,7 @@ drop table CustomerAddress;
 drop table Product;
 drop table ProductCategory;
 drop table ProductDescription;
+drop table ProductModel;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,9 +100,8 @@ CREATE TABLE [ProductModel](
     [ProductModelID] INTEGER IDENTITY (1, 1) NOT NULL,
     TEXT TEXT NOT NULL,
     [CatalogDescription] TEXT NULL,
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
-GO
 
 
 
