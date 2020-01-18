@@ -1,310 +1,44 @@
--- Create table to store error information
-CREATE TABLE [dbo].[ErrorLog](
-    [ErrorLogID] [int] IDENTITY (1, 1) NOT NULL,
-    [ErrorTime] [datetime] NOT NULL CONSTRAINT [DF_ErrorLog_ErrorTime] DEFAULT (GETDATE()),
-    [UserName] [sysname] NOT NULL, 
-    [ErrorNumber] [int] NOT NULL, 
-    [ErrorSeverity] [int] NULL, 
-    [ErrorState] [int] NULL, 
-    [ErrorProcedure] [nvarchar](126) NULL, 
-    [ErrorLine] [int] NULL, 
-    [ErrorMessage] [nvarchar](4000) NOT NULL
-) ON [PRIMARY];
-GO
+select 'drop table ' || name || ';' from sqlite_master where type = 'table' and name <> 'sqlite_sequence';
 
-ALTER TABLE [dbo].[ErrorLog] WITH CHECK ADD 
-    CONSTRAINT [PK_ErrorLog_ErrorLogID] PRIMARY KEY CLUSTERED 
-    (
-        [ErrorLogID]
-    )  ON [PRIMARY];
-GO
+drop table ErrorLog;
+drop table BuildVersion;
+drop table Address;
 
--- uspPrintError prints error information about the error that caused 
--- execution to jump to the CATCH block of a TRY...CATCH construct. 
--- Should be executed from within the scope of a CATCH block otherwise 
--- it will return without printing any error information.
-CREATE PROCEDURE [dbo].[uspPrintError] 
-AS
-BEGIN
-    SET NOCOUNT ON;
+CREATE TABLE [ErrorLog](
+    [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [ErrorTime] DATETIME NOT NULL DEFAULT (datetime('now')),
+    [UserName] TEXT NOT NULL, 
+    [ErrorNumber] INTEGER NOT NULL, 
+    [ErrorSeverity] INTEGER NULL, 
+    [ErrorState] INTEGER NULL, 
+    [ErrorProcedure] TEXT NULL, 
+    [ErrorLine] INTEGER NULL, 
+    [ErrorMessage] TEXT NOT NULL
+);
 
-    -- Print error information. 
-    PRINT 'Error ' + CONVERT(varchar(50), ERROR_NUMBER()) +
-          ', Severity ' + CONVERT(varchar(5), ERROR_SEVERITY()) +
-          ', State ' + CONVERT(varchar(5), ERROR_STATE()) + 
-          ', Procedure ' + ISNULL(ERROR_PROCEDURE(), '-') + 
-          ', Line ' + CONVERT(varchar(5), ERROR_LINE());
-    PRINT ERROR_MESSAGE();
-END;
-GO
-
--- uspLogError logs error information in the ErrorLog table about the 
--- error that caused execution to jump to the CATCH block of a 
--- TRY...CATCH construct. This should be executed from within the scope 
--- of a CATCH block otherwise it will return without inserting error 
--- information. 
-CREATE PROCEDURE [dbo].[uspLogError] 
-    @ErrorLogID [int] = 0 OUTPUT -- contains the ErrorLogID of the row inserted
-AS                               -- by uspLogError in the ErrorLog table
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Output parameter value of 0 indicates that error 
-    -- information was not logged
-    SET @ErrorLogID = 0;
-
-    BEGIN TRY
-        -- Return if there is no error information to log
-        IF ERROR_NUMBER() IS NULL
-            RETURN;
-
-        -- Return if inside an uncommittable transaction.
-        -- Data insertion/modification is not allowed when 
-        -- a transaction is in an uncommittable state.
-        IF XACT_STATE() = -1
-        BEGIN
-            PRINT 'Cannot log error since the current transaction is in an uncommittable state. ' 
-                + 'Rollback the transaction before executing uspLogError in order to successfully log error information.';
-            RETURN;
-        END;
-
-        INSERT [dbo].[ErrorLog] 
-            (
-            [UserName], 
-            [ErrorNumber], 
-            [ErrorSeverity], 
-            [ErrorState], 
-            [ErrorProcedure], 
-            [ErrorLine], 
-            [ErrorMessage]
-            ) 
-        VALUES 
-            (
-            CONVERT(sysname, CURRENT_USER), 
-            ERROR_NUMBER(),
-            ERROR_SEVERITY(),
-            ERROR_STATE(),
-            ERROR_PROCEDURE(),
-            ERROR_LINE(),
-            ERROR_MESSAGE()
-            );
-
-        -- Pass back the ErrorLogID of the row inserted
-        SET @ErrorLogID = @@IDENTITY;
-    END TRY
-    BEGIN CATCH
-        PRINT 'An error occurred in stored procedure uspLogError: ';
-        EXECUTE [dbo].[uspPrintError];
-        RETURN -1;
-    END CATCH
-END;
-GO
+CREATE TABLE [BuildVersion](
+    [SystemInformationID] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [Database Version] TEXT NOT NULL, 
+    [VersionDate] DATETIME NOT NULL, 
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+);
 
 
-
--- ****************************************
--- Create Data Types
--- ****************************************
-PRINT '';
-PRINT '*** Creating Data Types';
-GO
-
-CREATE TYPE [AccountNumber] FROM nvarchar(15) NULL;
-CREATE TYPE [Flag] FROM bit NOT NULL;
-CREATE TYPE [NameStyle] FROM bit NOT NULL;
-CREATE TYPE [Name] FROM nvarchar(50) NULL;
-CREATE TYPE [OrderNumber] FROM nvarchar(25) NULL;
-CREATE TYPE [Phone] FROM nvarchar(25) NULL;
-GO
-
-
-
-
--- ******************************************************
--- Create database schemas
--- ******************************************************
-PRINT '';
-PRINT '*** Creating Database Schemas';
-GO
-
-
-CREATE SCHEMA [SalesLT] AUTHORIZATION [dbo];
-GO
-
-
--- ****************************************
--- Create XML schemas
--- ****************************************
-PRINT '';
-PRINT '*** Creating XML Schemas';
-GO
-
-
-
--- Create Product catalog description schema.
-PRINT '';
-PRINT 'Create Product catalog description schema';
-GO
-
-CREATE XML SCHEMA COLLECTION [SalesLT].[ProductDescriptionSchemaCollection] AS 
-'<xsd:schema targetNamespace="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelWarrAndMain"
-    xmlns="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelWarrAndMain" 
-    elementFormDefault="qualified" 
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
-  
-    <xsd:element name="Warranty"  >
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="WarrantyPeriod" type="xsd:string"  />
-                <xsd:element name="Description" type="xsd:string"  />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="Maintenance"  >
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="NoOfYears" type="xsd:string"  />
-                <xsd:element name="Description" type="xsd:string"  />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-</xsd:schema>';
-
-ALTER XML SCHEMA COLLECTION [SalesLT].[ProductDescriptionSchemaCollection] ADD 
-'<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelDescription" 
-    xmlns="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelDescription" 
-    elementFormDefault="qualified" 
-    xmlns:mstns="http://tempuri.org/XMLSchema.xsd" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:wm="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelWarrAndMain" >
-
-    <xs:import 
-        namespace="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelWarrAndMain" />
-
-    <xs:element name="ProductDescription" type="ProductDescription" />
-        <xs:complexType name="ProductDescription">
-            <xs:annotation>
-                <xs:documentation>Product description has a summary blurb, if its manufactured elsewhere it 
-                includes a link to the manufacturers site for this component.
-                Then it has optional zero or more sequences of features, pictures, categories
-                and technical specifications.
-                </xs:documentation>
-            </xs:annotation>
-            <xs:sequence>
-                <xs:element name="Summary" type="Summary" minOccurs="0" />
-                <xs:element name="Manufacturer" type="Manufacturer" minOccurs="0" />
-                <xs:element name="Features" type="Features" minOccurs="0" maxOccurs="unbounded" />
-                <xs:element name="Picture" type="Picture" minOccurs="0" maxOccurs="unbounded" />
-                <xs:element name="Category" type="Category" minOccurs="0" maxOccurs="unbounded" />
-                <xs:element name="Specifications" type="Specifications" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-            <xs:attribute name="ProductModelID" type="xs:string" />
-            <xs:attribute name="ProductModelName" type="xs:string" />
-        </xs:complexType>
-  
-        <xs:complexType name="Summary" mixed="true" >
-            <xs:sequence>
-                <xs:any processContents="skip" namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-        </xs:complexType>
-        
-        <xs:complexType name="Manufacturer">
-            <xs:sequence>
-                <xs:element name="Name" type="xs:string" minOccurs="0" />
-                <xs:element name="CopyrightURL" type="xs:string" minOccurs="0" />
-                <xs:element name="Copyright" type="xs:string" minOccurs="0" />
-                <xs:element name="ProductURL" type="xs:string" minOccurs="0" />
-            </xs:sequence>
-        </xs:complexType>
-  
-        <xs:complexType name="Picture">
-            <xs:annotation>
-                <xs:documentation>Pictures of the component, some standard sizes are "Large" for zoom in, "Small" for a normal web page and "Thumbnail" for product listing pages.</xs:documentation>
-            </xs:annotation>
-            <xs:sequence>
-                <xs:element name="Name" type="xs:string" minOccurs="0" />
-                <xs:element name="Angle" type="xs:string" minOccurs="0" />
-                <xs:element name="Size" type="xs:string" minOccurs="0" />
-                <xs:element name="ProductPhotoID" type="xs:integer" minOccurs="0" />
-            </xs:sequence>
-        </xs:complexType>
-
-        <xs:annotation>
-            <xs:documentation>Features of the component that are more "sales" oriented.</xs:documentation>
-        </xs:annotation>
-
-        <xs:complexType name="Features" mixed="true"  >
-            <xs:sequence>
-                <xs:element ref="wm:Warranty"  />
-                <xs:element ref="wm:Maintenance"  />
-                <xs:any processContents="skip"  namespace="##other" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-        </xs:complexType>
-
-        <xs:complexType name="Specifications" mixed="true">
-            <xs:annotation>
-                <xs:documentation>A single technical aspect of the component.</xs:documentation>
-            </xs:annotation>
-            <xs:sequence>
-                <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-        </xs:complexType>
-
-        <xs:complexType name="Category">
-            <xs:annotation>
-                <xs:documentation>A single categorization element that designates a classification taxonomy and a code within that classification type.  Optional description for default display if needed.</xs:documentation>
-            </xs:annotation>
-            <xs:sequence>
-                <xs:element ref="Taxonomy" />
-                <xs:element ref="Code" />
-                <xs:element ref="Description" minOccurs="0" />
-            </xs:sequence>
-        </xs:complexType>
-
-    <xs:element name="Taxonomy" type="xs:string" />
-    <xs:element name="Code" type="xs:string" />
-    <xs:element name="Description" type="xs:string" />
-</xs:schema>';
-GO
-
-
-
--- ******************************************************
--- Create tables
--- ******************************************************
-PRINT '';
-PRINT '*** Creating Tables';
-GO
-
--- *** THIS TABLE IS INTENTIONALLY A HEAP - DO NOT ADD A PRIMARY KEY ***
-CREATE TABLE [dbo].[BuildVersion](
-    [SystemInformationID] [tinyint] IDENTITY (1, 1) NOT NULL,
-    [Database Version] [nvarchar](25) NOT NULL, 
-    [VersionDate] [datetime] NOT NULL, 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_BuildVersion_ModifiedDate] DEFAULT (GETDATE())
-) ON [PRIMARY];
-GO
-
-
-CREATE TABLE [SalesLT].[Address](
-    [AddressID] [int] IDENTITY (1, 1) NOT FOR REPLICATION NOT NULL,
-    [AddressLine1] [nvarchar](60) NOT NULL, 
-    [AddressLine2] [nvarchar](60) NULL, 
-    [City] [nvarchar](30) NOT NULL, 
-    [StateProvince] [Name] NOT NULL,
-	[CountryRegion] [Name] NOT NULL,
-    [PostalCode] [nvarchar](15) NOT NULL, 
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Address_rowguid] DEFAULT (NEWID()),
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Address_ModifiedDate] DEFAULT (GETDATE())
-) ON [PRIMARY];
-GO
+CREATE TABLE [Address](
+    [AddressID] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [AddressLine1] TEXT NOT NULL, 
+    [AddressLine2] TEXT NULL, 
+    [City] TEXT NOT NULL, 
+    [StateProvince] TEXT NOT NULL,
+	[CountryRegion] TEXT NOT NULL,
+    [PostalCode] TEXT NOT NULL, 
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+);
 
 
 
 CREATE TABLE [SalesLT].[Customer](
-    [CustomerID] [int] IDENTITY (1, 1) NOT FOR REPLICATION NOT NULL,
+    [CustomerID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [NameStyle] [NameStyle] NOT NULL CONSTRAINT [DF_Customer_NameStyle] DEFAULT (0),
     [Title] [nvarchar](8) NULL, 
     [FirstName] [Name] NOT NULL,
@@ -318,20 +52,20 @@ CREATE TABLE [SalesLT].[Customer](
     [PasswordHash] [varchar](128) NOT NULL, 
     [PasswordSalt] [varchar](10) NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Customer_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Customer_ModifiedDate] DEFAULT (GETDATE()), 
-) ON [PRIMARY];
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Customer_ModifiedDate] DEFAULT (datetime('now')), 
+);
 GO
 
 CREATE TABLE [SalesLT].[CustomerAddress](
-	[CustomerID] [int] NOT NULL,
-	[AddressID] [int] NOT NULL,
+	[CustomerID] INTEGER NOT NULL,
+	[AddressID] INTEGER NOT NULL,
 	[AddressType] [Name] NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_CustomerAddress_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_CustomerAddress_ModifiedDate] DEFAULT (GETDATE()), 
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_CustomerAddress_ModifiedDate] DEFAULT (datetime('now')), 
 )	
 
 CREATE TABLE [SalesLT].[Product](
-    [ProductID] [int] IDENTITY (1, 1) NOT NULL,
+    [ProductID] INTEGER IDENTITY (1, 1) NOT NULL,
     [Name] [Name] NOT NULL,
     [ProductNumber] [nvarchar](25) NOT NULL, 
     [Color] [nvarchar](15) NULL, 
@@ -339,80 +73,80 @@ CREATE TABLE [SalesLT].[Product](
     [ListPrice] [money] NOT NULL,
     [Size] [nvarchar](5) NULL, 
     [Weight] [decimal](8, 2) NULL,
-    [ProductCategoryID] [int] NULL,
-    [ProductModelID] [int] NULL,
+    [ProductCategoryID] INTEGER NULL,
+    [ProductModelID] INTEGER NULL,
     [SellStartDate] [datetime] NOT NULL,
     [SellEndDate] [datetime] NULL,
     [DiscontinuedDate] [datetime] NULL,
     [ThumbNailPhoto] [varbinary](max) NULL,
     [ThumbnailPhotoFileName] [nvarchar](50) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Product_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Product_ModifiedDate] DEFAULT (GETDATE()),
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Product_ModifiedDate] DEFAULT (datetime('now')),
     CONSTRAINT [CK_Product_StandardCost] CHECK ([StandardCost] >= 0.00),
     CONSTRAINT [CK_Product_ListPrice] CHECK ([ListPrice] >= 0.00),
     CONSTRAINT [CK_Product_Weight] CHECK ([Weight] > 0.00),
     CONSTRAINT [CK_Product_SellEndDate] CHECK (([SellEndDate] >= [SellStartDate]) OR ([SellEndDate] IS NULL)),
-) ON [PRIMARY];
+);
 GO
 
 CREATE TABLE [SalesLT].[ProductCategory](
-    [ProductCategoryID] [int] IDENTITY (1, 1) NOT NULL,
-	[ParentProductCategoryID] [int] NULL,
+    [ProductCategoryID] INTEGER IDENTITY (1, 1) NOT NULL,
+	[ParentProductCategoryID] INTEGER NULL,
     [Name] [Name] NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductCategory_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductCategory_ModifiedDate] DEFAULT (GETDATE()) 
-) ON [PRIMARY];
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductCategory_ModifiedDate] DEFAULT (datetime('now')) 
+);
 GO
 
 
 CREATE TABLE [SalesLT].[ProductDescription](
-    [ProductDescriptionID] [int] IDENTITY (1, 1) NOT NULL,
+    [ProductDescriptionID] INTEGER IDENTITY (1, 1) NOT NULL,
     [Description] [nvarchar](400) NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductDescription_ModifiedDate] DEFAULT (GETDATE()) 
-) ON [PRIMARY];
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+);
 GO
 
 CREATE TABLE [SalesLT].[ProductModel](
-    [ProductModelID] [int] IDENTITY (1, 1) NOT NULL,
+    [ProductModelID] INTEGER IDENTITY (1, 1) NOT NULL,
     [Name] [Name] NOT NULL,
     [CatalogDescription] [XML]([SalesLT].[ProductDescriptionSchemaCollection]) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModel_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (GETDATE()) 
-) ON [PRIMARY];
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
+);
 GO
 
 
 
 CREATE TABLE [SalesLT].[ProductModelProductDescription](
-    [ProductModelID] [int] NOT NULL,
-    [ProductDescriptionID] [int] NOT NULL,
+    [ProductModelID] INTEGER NOT NULL,
+    [ProductDescriptionID] INTEGER NOT NULL,
     [Culture] [nchar](6) NOT NULL, 
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModelProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModelProductDescription_ModifiedDate] DEFAULT (GETDATE()) 
-) ON [PRIMARY];
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModelProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+);
 GO
 
 CREATE TABLE [SalesLT].[SalesOrderDetail](
-    [SalesOrderID] [int] NOT NULL,
-    [SalesOrderDetailID] [int] IDENTITY (1, 1) NOT NULL,
+    [SalesOrderID] INTEGER NOT NULL,
+    [SalesOrderDetailID] INTEGER IDENTITY (1, 1) NOT NULL,
     [OrderQty] [smallint] NOT NULL,
-    [ProductID] [int] NOT NULL,
+    [ProductID] INTEGER NOT NULL,
     [UnitPrice] [money] NOT NULL,
     [UnitPriceDiscount] [money] NOT NULL CONSTRAINT [DF_SalesOrderDetail_UnitPriceDiscount] DEFAULT (0.0),
     [LineTotal] AS ISNULL([UnitPrice] * (1.0 - [UnitPriceDiscount]) * [OrderQty], 0.0),
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderDetail_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderDetail_ModifiedDate] DEFAULT (GETDATE()), 
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderDetail_ModifiedDate] DEFAULT (datetime('now')), 
     CONSTRAINT [CK_SalesOrderDetail_OrderQty] CHECK ([OrderQty] > 0), 
     CONSTRAINT [CK_SalesOrderDetail_UnitPrice] CHECK ([UnitPrice] >= 0.00), 
     CONSTRAINT [CK_SalesOrderDetail_UnitPriceDiscount] CHECK ([UnitPriceDiscount] >= 0.00) 
-) ON [PRIMARY];
+);
 GO
 
 CREATE TABLE [SalesLT].[SalesOrderHeader](
-    [SalesOrderID] [int] IDENTITY (1, 1) NOT FOR REPLICATION NOT NULL,
+    [SalesOrderID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [RevisionNumber] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_RevisionNumber] DEFAULT (0),
-    [OrderDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (GETDATE()),
+    [OrderDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (datetime('now')),
     [DueDate] [datetime] NOT NULL,
     [ShipDate] [datetime] NULL,
     [Status] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_Status] DEFAULT (1),
@@ -420,7 +154,7 @@ CREATE TABLE [SalesLT].[SalesOrderHeader](
     [SalesOrderNumber] AS ISNULL(N'SO' + CONVERT(nvarchar(23), [SalesOrderID]), N'*** ERROR ***'), 
     [PurchaseOrderNumber] [OrderNumber] NULL,
     [AccountNumber] [AccountNumber] NULL,
-    [CustomerID] [int] NOT NULL,
+    [CustomerID] INTEGER NOT NULL,
 	[ShipToAddressID] int,
 	[BillToAddressID] int,
     [ShipMethod] [nvarchar](50) NOT NULL,
@@ -431,14 +165,14 @@ CREATE TABLE [SalesLT].[SalesOrderHeader](
     [TotalDue] AS ISNULL([SubTotal] + [TaxAmt] + [Freight], 0),
     [Comment] [nvarchar](max) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_SalesOrderHeader_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_ModifiedDate] DEFAULT (GETDATE()),
+    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_ModifiedDate] DEFAULT (datetime('now')),
     CONSTRAINT [CK_SalesOrderHeader_Status] CHECK ([Status] BETWEEN 0 AND 8), 
     CONSTRAINT [CK_SalesOrderHeader_DueDate] CHECK ([DueDate] >= [OrderDate]), 
     CONSTRAINT [CK_SalesOrderHeader_ShipDate] CHECK (([ShipDate] >= [OrderDate]) OR ([ShipDate] IS NULL)), 
     CONSTRAINT [CK_SalesOrderHeader_SubTotal] CHECK ([SubTotal] >= 0.00), 
     CONSTRAINT [CK_SalesOrderHeader_TaxAmt] CHECK ([TaxAmt] >= 0.00), 
     CONSTRAINT [CK_SalesOrderHeader_Freight] CHECK ([Freight] >= 0.00) 
-) ON [PRIMARY];
+);
 GO
 
 
@@ -602,14 +336,14 @@ ALTER TABLE [SalesLT].[Address] WITH CHECK ADD
     CONSTRAINT [PK_Address_AddressID] PRIMARY KEY CLUSTERED 
     (
         [AddressID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[Customer] WITH CHECK ADD 
     CONSTRAINT [PK_Customer_CustomerID] PRIMARY KEY CLUSTERED 
     (
         [CustomerID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD 
@@ -617,35 +351,35 @@ ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD
     (
         [CustomerID],
 		[AddressID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[Product] WITH CHECK ADD 
     CONSTRAINT [PK_Product_ProductID] PRIMARY KEY CLUSTERED 
     (
         [ProductID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[ProductCategory] WITH CHECK ADD 
     CONSTRAINT [PK_ProductCategory_ProductCategoryID] PRIMARY KEY CLUSTERED 
     (
         [ProductCategoryID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[ProductDescription] WITH CHECK ADD 
     CONSTRAINT [PK_ProductDescription_ProductDescriptionID] PRIMARY KEY CLUSTERED 
     (
         [ProductDescriptionID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[ProductModel] WITH CHECK ADD 
     CONSTRAINT [PK_ProductModel_ProductModelID] PRIMARY KEY CLUSTERED 
     (
         [ProductModelID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD 
@@ -654,7 +388,7 @@ ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD
         [ProductModelID],
         [ProductDescriptionID],
         [Culture]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 
@@ -663,14 +397,14 @@ ALTER TABLE [SalesLT].[SalesOrderDetail] WITH CHECK ADD
     (
         [SalesOrderID],
         [SalesOrderDetailID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[SalesOrderHeader] WITH CHECK ADD 
     CONSTRAINT [PK_SalesOrderHeader_SalesOrderID] PRIMARY KEY CLUSTERED 
     (
         [SalesOrderID]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 -- ******************************************************
@@ -685,72 +419,72 @@ ALTER TABLE [SalesLT].[Address] WITH CHECK ADD
     CONSTRAINT [AK_Address_rowguid] UNIQUE 
     (
         [rowguid]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[Customer] WITH CHECK ADD 
     CONSTRAINT [AK_Customer_rowguid] UNIQUE 
     (
         [rowguid]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD 
     CONSTRAINT [AK_CustomerAddress_rowguid] UNIQUE 
     (
         [rowguid]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[Product] WITH CHECK ADD 
     CONSTRAINT [AK_Product_ProductNumber] UNIQUE 
     (
         [ProductNumber]
-    )  ON [PRIMARY],
+    ) ,
 	CONSTRAINT [AK_Product_Name] UNIQUE
 	(
 		[Name]
-	) ON [PRIMARY],
+	),
 	CONSTRAINT [AK_Product_rowguid] UNIQUE
 	(
 		[rowguid]
-	) ON [PRIMARY];
+	);
 GO
 
 ALTER TABLE [SalesLT].[ProductCategory] WITH CHECK ADD 
     CONSTRAINT [AK_ProductCategory_Name] UNIQUE 
     (
         [Name]
-    )  ON [PRIMARY],
+    ) ,
 	CONSTRAINT [AK_ProductCategory_rowguid] UNIQUE
 	(
 		[rowguid]
-	) ON [PRIMARY];
+	);
 GO
 
 ALTER TABLE [SalesLT].[ProductDescription] WITH CHECK ADD 
     CONSTRAINT [AK_ProductDescription_rowguid] UNIQUE 
     (
         [rowguid]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[ProductModel] WITH CHECK ADD 
     CONSTRAINT [AK_ProductModel_Name] UNIQUE 
     (
         [Name]
-    )  ON [PRIMARY],
+    ) ,
 	CONSTRAINT [AK_ProductModel_rowguid] UNIQUE
 	(
 		[rowguid]
-	) ON [PRIMARY];
+	);
 GO
 
 ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD 
 	CONSTRAINT [AK_ProductModelProductDescription_rowguid] UNIQUE
 	(
 		[rowguid]
-	) ON [PRIMARY];
+	);
 GO
 
 
@@ -758,18 +492,18 @@ ALTER TABLE [SalesLT].[SalesOrderDetail] WITH CHECK ADD
     CONSTRAINT [AK_SalesOrderDetail_rowguid] UNIQUE 
     (
         [rowguid]
-    )  ON [PRIMARY];
+    ) ;
 GO
 
 ALTER TABLE [SalesLT].[SalesOrderHeader] WITH CHECK ADD 
     CONSTRAINT [AK_SalesOrderHeader_SalesOrderNumber] UNIQUE 
     (
         [SalesOrderNumber]
-    )  ON [PRIMARY],
+    ) ,
 	CONSTRAINT [AK_SalesOrderHeader_rowguid] UNIQUE
 	(
 		[rowguid]
-	) ON [PRIMARY];
+	);
 GO
 
 -- ******************************************************
@@ -781,17 +515,17 @@ GO
 
 CREATE INDEX [IX_Address_AddressLine1_AddressLine2_City_StateProvince_PostalCode_CountryRegion] 
 	ON [SalesLT].[Address] ([AddressLine1], [AddressLine2], [City], [StateProvince], 
-		[PostalCode], [CountryRegion]) ON [PRIMARY];
-CREATE INDEX [IX_Address_StateProvince] ON [SalesLT].[Address]([StateProvince]) ON [PRIMARY];
+		[PostalCode], [CountryRegion]);
+CREATE INDEX [IX_Address_StateProvince] ON [SalesLT].[Address]([StateProvince]);
 GO
 
-CREATE INDEX [IX_Customer_EmailAddress] ON [SalesLT].[Customer]([EmailAddress]) ON [PRIMARY];
+CREATE INDEX [IX_Customer_EmailAddress] ON [SalesLT].[Customer]([EmailAddress]);
 GO
 
-CREATE INDEX [IX_SalesOrderDetail_ProductID] ON [SalesLT].[SalesOrderDetail]([ProductID]) ON [PRIMARY];
+CREATE INDEX [IX_SalesOrderDetail_ProductID] ON [SalesLT].[SalesOrderDetail]([ProductID]);
 GO
 
-CREATE INDEX [IX_SalesOrderHeader_CustomerID] ON [SalesLT].[SalesOrderHeader]([CustomerID]) ON [PRIMARY];
+CREATE INDEX [IX_SalesOrderHeader_CustomerID] ON [SalesLT].[SalesOrderHeader]([CustomerID]);
 GO
 
 
@@ -1175,7 +909,7 @@ RETURNS @retCategoryInformation TABLE
     -- Columns returned by the function
     [ParentProductCategoryName] [nvarchar](50) NULL, 
     [ProductCategoryName] [nvarchar](50) NOT NULL,
-	[ProductCategoryID] [int] NOT NULL
+	[ProductCategoryID] INTEGER NOT NULL
 )
 AS 
 -- Returns the CustomerID, first name, and last name for the specified customer.
@@ -1461,17 +1195,17 @@ GO
 
 -- Constraints - PK, FK, DF, CK
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [Address], N'CONSTRAINT', [PK_Address_AddressID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [Address], N'CONSTRAINT', [DF_Address_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [Address], N'CONSTRAINT', [DF_Address_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [Address], N'CONSTRAINT', [DF_Address_rowguid];
 GO
 
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [dbo], N'TABLE', [BuildVersion], N'CONSTRAINT', [DF_BuildVersion_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [dbo], N'TABLE', [BuildVersion], N'CONSTRAINT', [DF_BuildVersion_ModifiedDate];
 GO
 
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [Customer], N'CONSTRAINT', [PK_Customer_CustomerID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of 0', N'SCHEMA', [SalesLT], N'TABLE', [Customer], N'CONSTRAINT', [DF_Customer_NameStyle];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [Customer], N'CONSTRAINT', [DF_Customer_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [Customer], N'CONSTRAINT', [DF_Customer_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [Customer], N'CONSTRAINT', [DF_Customer_rowguid];
 GO
 
@@ -1482,13 +1216,13 @@ EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constrai
 GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [dbo], N'TABLE', [ErrorLog], N'CONSTRAINT', [PK_ErrorLog_ErrorLogID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [dbo], N'TABLE', [ErrorLog], N'CONSTRAINT', [DF_ErrorLog_ErrorTime];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [dbo], N'TABLE', [ErrorLog], N'CONSTRAINT', [DF_ErrorLog_ErrorTime];
 GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [PK_Product_ProductID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing ProductModel.ProductModelID.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [FK_Product_ProductModel_ProductModelID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing ProductCategory.ProductCategoryID.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [FK_Product_ProductCategory_ProductCategoryID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [DF_Product_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [DF_Product_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [DF_Product_rowguid];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [ListPrice] >= (0.00)', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [CK_Product_ListPrice];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [Weight] > (0.00)', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'CONSTRAINT', [CK_Product_Weight];
@@ -1497,31 +1231,31 @@ GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'CONSTRAINT', [PK_ProductCategory_ProductCategoryID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing ProductCategory.ProductCategoryID.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'CONSTRAINT', [FK_ProductCategory_ProductCategory_ParentProductCategoryID_ProductCategoryID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'CONSTRAINT', [DF_ProductCategory_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'CONSTRAINT', [DF_ProductCategory_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()()', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'CONSTRAINT', [DF_ProductCategory_rowguid];
 GO
 
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [ProductDescription], N'CONSTRAINT', [PK_ProductDescription_ProductDescriptionID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [ProductDescription], N'CONSTRAINT', [DF_ProductDescription_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [ProductDescription], N'CONSTRAINT', [DF_ProductDescription_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [ProductDescription], N'CONSTRAINT', [DF_ProductDescription_rowguid];
 GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [ProductModel], N'CONSTRAINT', [PK_ProductModel_ProductModelID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [ProductModel], N'CONSTRAINT', [DF_ProductModel_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [ProductModel], N'CONSTRAINT', [DF_ProductModel_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [ProductModel], N'CONSTRAINT', [DF_ProductModel_rowguid];
 GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [ProductModelProductDescription], N'CONSTRAINT', [PK_ProductModelProductDescription_ProductModelID_ProductDescriptionID_Culture];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing ProductDescription.ProductDescriptionID.', N'SCHEMA', [SalesLT], N'TABLE', [ProductModelProductDescription], N'CONSTRAINT', [FK_ProductModelProductDescription_ProductDescription_ProductDescriptionID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing ProductModel.ProductModelID.', N'SCHEMA', [SalesLT], N'TABLE', [ProductModelProductDescription], N'CONSTRAINT', [FK_ProductModelProductDescription_ProductModel_ProductModelID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [ProductModelProductDescription], N'CONSTRAINT', [DF_ProductModelProductDescription_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [ProductModelProductDescription], N'CONSTRAINT', [DF_ProductModelProductDescription_ModifiedDate];
 GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key (clustered) constraint', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [PK_SalesOrderDetail_SalesOrderID_SalesOrderDetailID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Foreign key constraint referencing SalesOrderHeader.SalesOrderID.', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of 0.0', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [DF_SalesOrderDetail_UnitPriceDiscount];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [DF_SalesOrderDetail_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [DF_SalesOrderDetail_ModifiedDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [DF_SalesOrderDetail_rowguid];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [OrderQty] > (0)', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [CK_SalesOrderDetail_OrderQty];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [UnitPrice] >= (0.00)', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderDetail], N'CONSTRAINT', [CK_SalesOrderDetail_UnitPrice];
@@ -1538,8 +1272,8 @@ EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint v
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of 0.0', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_TaxAmt];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of 1 (TRUE)', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_OnlineOrderFlag];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of 1', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_Status];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_ModifiedDate];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of GETDATE()', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_OrderDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_ModifiedDate];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of datetime('now')', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_OrderDate];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Default constraint value of NEWID()', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [DF_SalesOrderHeader_rowguid];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [Freight] >= (0.00)', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [CK_SalesOrderHeader_Freight];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Check constraint [SubTotal] >= (0.00)', N'SCHEMA', [SalesLT], N'TABLE', [SalesOrderHeader], N'CONSTRAINT', [CK_SalesOrderHeader_SubTotal];
@@ -1622,5 +1356,5 @@ GO
 USE [master];
 GO
 
-PRINT 'Finished - ' + CONVERT(varchar, GETDATE(), 121);
+PRINT 'Finished - ' + CONVERT(varchar, datetime('now'), 121);
 GO
