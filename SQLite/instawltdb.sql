@@ -7,6 +7,7 @@ drop table Customer;
 drop table CustomerAddress;
 drop table Product;
 drop table ProductCategory;
+drop table ProductDescription;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,20 +89,16 @@ CREATE TABLE [ProductCategory](
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
-
 CREATE TABLE [ProductDescription](
     [ProductDescriptionID] INTEGER IDENTITY (1, 1) NOT NULL,
-    [Description] [nvarchar](400) NOT NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+    [Description] TEXT NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
-GO
 
 CREATE TABLE [ProductModel](
     [ProductModelID] INTEGER IDENTITY (1, 1) NOT NULL,
     TEXT TEXT NOT NULL,
-    [CatalogDescription] [XML]([ProductDescriptionSchemaCollection]) NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModel_rowguid] DEFAULT (NEWID()), 
+    [CatalogDescription] TEXT NULL,
     [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
