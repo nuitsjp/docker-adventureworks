@@ -23,7 +23,6 @@ CREATE TABLE [BuildVersion](
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
-
 CREATE TABLE [Address](
     [AddressID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [AddressLine1] TEXT NOT NULL, 
@@ -35,38 +34,34 @@ CREATE TABLE [Address](
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
-
-
-CREATE TABLE [SalesLT].[Customer](
+CREATE TABLE [Customer](
     [CustomerID] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [NameStyle] [NameStyle] NOT NULL CONSTRAINT [DF_Customer_NameStyle] DEFAULT (0),
-    [Title] [nvarchar](8) NULL, 
-    [FirstName] [Name] NOT NULL,
-    [MiddleName] [Name] NULL,
-    [LastName] [Name] NOT NULL,
-    [Suffix] [nvarchar](10) NULL, 
-	[CompanyName] [nvarchar](128) NULL,
-	[SalesPerson] [nvarchar](256),
-    [EmailAddress] [nvarchar](50) NULL, 
-    [Phone] [Phone] NULL, 
-    [PasswordHash] [varchar](128) NOT NULL, 
-    [PasswordSalt] [varchar](10) NOT NULL,
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_Customer_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_Customer_ModifiedDate] DEFAULT (datetime('now')), 
+    [NameStyle] INTEGER NOT NULL DEFAULT (0),
+    [Title] TEXT NULL, 
+    [FirstName] TEXT NOT NULL,
+    [MiddleName] TEXT NULL,
+    [LastName] TEXT NOT NULL,
+    [Suffix] TEXT NULL, 
+	[CompanyName] TEXT NULL,
+	[SalesPerson] TEXT,
+    [EmailAddress] TEXT NULL, 
+    [Phone] TEXT NULL, 
+    [PasswordHash] TEXT NOT NULL, 
+    [PasswordSalt] TEXT NOT NULL,
+    [ModifiedDate] [datetime] NOT NULL DEFAULT (datetime('now'))
 );
-GO
 
-CREATE TABLE [SalesLT].[CustomerAddress](
+CREATE TABLE [CustomerAddress](
 	[CustomerID] INTEGER NOT NULL,
 	[AddressID] INTEGER NOT NULL,
-	[AddressType] [Name] NOT NULL,
+	[AddressType] TEXT NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_CustomerAddress_rowguid] DEFAULT (NEWID()), 
     [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_CustomerAddress_ModifiedDate] DEFAULT (datetime('now')), 
 )	
 
-CREATE TABLE [SalesLT].[Product](
+CREATE TABLE [Product](
     [ProductID] INTEGER IDENTITY (1, 1) NOT NULL,
-    [Name] [Name] NOT NULL,
+    TEXT TEXT NOT NULL,
     [ProductNumber] [nvarchar](25) NOT NULL, 
     [Color] [nvarchar](15) NULL, 
     [StandardCost] [money] NOT NULL,
@@ -89,17 +84,17 @@ CREATE TABLE [SalesLT].[Product](
 );
 GO
 
-CREATE TABLE [SalesLT].[ProductCategory](
+CREATE TABLE [ProductCategory](
     [ProductCategoryID] INTEGER IDENTITY (1, 1) NOT NULL,
 	[ParentProductCategoryID] INTEGER NULL,
-    [Name] [Name] NOT NULL,
+    TEXT TEXT NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductCategory_rowguid] DEFAULT (NEWID()), 
     [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductCategory_ModifiedDate] DEFAULT (datetime('now')) 
 );
 GO
 
 
-CREATE TABLE [SalesLT].[ProductDescription](
+CREATE TABLE [ProductDescription](
     [ProductDescriptionID] INTEGER IDENTITY (1, 1) NOT NULL,
     [Description] [nvarchar](400) NOT NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductDescription_rowguid] DEFAULT (NEWID()), 
@@ -107,10 +102,10 @@ CREATE TABLE [SalesLT].[ProductDescription](
 );
 GO
 
-CREATE TABLE [SalesLT].[ProductModel](
+CREATE TABLE [ProductModel](
     [ProductModelID] INTEGER IDENTITY (1, 1) NOT NULL,
-    [Name] [Name] NOT NULL,
-    [CatalogDescription] [XML]([SalesLT].[ProductDescriptionSchemaCollection]) NULL,
+    TEXT TEXT NOT NULL,
+    [CatalogDescription] [XML]([ProductDescriptionSchemaCollection]) NULL,
     [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModel_rowguid] DEFAULT (NEWID()), 
     [ModifiedDate] [datetime] NOT NULL CONSTRAINT [DF_ProductModel_ModifiedDate] DEFAULT (datetime('now')) 
 );
@@ -118,7 +113,7 @@ GO
 
 
 
-CREATE TABLE [SalesLT].[ProductModelProductDescription](
+CREATE TABLE [ProductModelProductDescription](
     [ProductModelID] INTEGER NOT NULL,
     [ProductDescriptionID] INTEGER NOT NULL,
     [Culture] [nchar](6) NOT NULL, 
@@ -127,7 +122,7 @@ CREATE TABLE [SalesLT].[ProductModelProductDescription](
 );
 GO
 
-CREATE TABLE [SalesLT].[SalesOrderDetail](
+CREATE TABLE [SalesOrderDetail](
     [SalesOrderID] INTEGER NOT NULL,
     [SalesOrderDetailID] INTEGER IDENTITY (1, 1) NOT NULL,
     [OrderQty] [smallint] NOT NULL,
@@ -143,7 +138,7 @@ CREATE TABLE [SalesLT].[SalesOrderDetail](
 );
 GO
 
-CREATE TABLE [SalesLT].[SalesOrderHeader](
+CREATE TABLE [SalesOrderHeader](
     [SalesOrderID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [RevisionNumber] [tinyint] NOT NULL CONSTRAINT [DF_SalesOrderHeader_RevisionNumber] DEFAULT (0),
     [OrderDate] [datetime] NOT NULL CONSTRAINT [DF_SalesOrderHeader_OrderDate] DEFAULT (datetime('now')),
@@ -200,9 +195,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[Address]';
+PRINT 'Loading [Address]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[Address] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Address.csv'
+BULK INSERT [AdventureWorksLT2008R2].[Address] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Address.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -212,9 +207,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[Customer]';
+PRINT 'Loading [Customer]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[Customer] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Customer.csv'
+BULK INSERT [AdventureWorksLT2008R2].[Customer] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Customer.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -224,9 +219,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[CustomerAddress]';
+PRINT 'Loading [CustomerAddress]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[CustomerAddress] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\CustomerAddress.csv'
+BULK INSERT [AdventureWorksLT2008R2].[CustomerAddress] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\CustomerAddress.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -236,9 +231,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[Product]';
+PRINT 'Loading [Product]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[Product] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Product.csv'
+BULK INSERT [AdventureWorksLT2008R2].[Product] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\Product.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -248,9 +243,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[ProductCategory]';
+PRINT 'Loading [ProductCategory]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[ProductCategory] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductCategory.csv'
+BULK INSERT [AdventureWorksLT2008R2].[ProductCategory] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductCategory.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -260,9 +255,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[ProductDescription]';
+PRINT 'Loading [ProductDescription]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[ProductDescription] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductDescription.csv'
+BULK INSERT [AdventureWorksLT2008R2].[ProductDescription] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductDescription.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -272,9 +267,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[ProductModel]';
+PRINT 'Loading [ProductModel]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[ProductModel] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductModel.csv'
+BULK INSERT [AdventureWorksLT2008R2].[ProductModel] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductModel.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'widechar',
@@ -284,9 +279,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[ProductModelProductDescription]';
+PRINT 'Loading [ProductModelProductDescription]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[ProductModelProductDescription] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductModelProductDescription.csv'
+BULK INSERT [AdventureWorksLT2008R2].[ProductModelProductDescription] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\ProductModelProductDescription.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -296,9 +291,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[SalesOrderDetail]';
+PRINT 'Loading [SalesOrderDetail]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[SalesOrderDetail] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\SalesOrderDetail.csv'
+BULK INSERT [AdventureWorksLT2008R2].[SalesOrderDetail] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\SalesOrderDetail.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -308,9 +303,9 @@ WITH (
    TABLOCK   
 );
 
-PRINT 'Loading [SalesLT].[SalesOrderHeader]';
+PRINT 'Loading [SalesOrderHeader]';
 
-BULK INSERT [AdventureWorksLT2008R2].[SalesLT].[SalesOrderHeader] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\SalesOrderHeader.csv'
+BULK INSERT [AdventureWorksLT2008R2].[SalesOrderHeader] FROM N'$(SqlSamplesSourceDataPath)AdventureWorks 2008R2 LT\SalesOrderHeader.csv'
 WITH (
    CODEPAGE='ACP',
    DATAFILETYPE = 'char',
@@ -332,21 +327,21 @@ GO
 
 SET QUOTED_IDENTIFIER ON;
 
-ALTER TABLE [SalesLT].[Address] WITH CHECK ADD 
+ALTER TABLE [Address] WITH CHECK ADD 
     CONSTRAINT [PK_Address_AddressID] PRIMARY KEY CLUSTERED 
     (
         [AddressID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[Customer] WITH CHECK ADD 
+ALTER TABLE [Customer] WITH CHECK ADD 
     CONSTRAINT [PK_Customer_CustomerID] PRIMARY KEY CLUSTERED 
     (
         [CustomerID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD 
+ALTER TABLE [CustomerAddress] WITH CHECK ADD 
     CONSTRAINT [PK_CustomerAddress_CustomerID_AddressID] PRIMARY KEY CLUSTERED 
     (
         [CustomerID],
@@ -354,35 +349,35 @@ ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[Product] WITH CHECK ADD 
+ALTER TABLE [Product] WITH CHECK ADD 
     CONSTRAINT [PK_Product_ProductID] PRIMARY KEY CLUSTERED 
     (
         [ProductID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[ProductCategory] WITH CHECK ADD 
+ALTER TABLE [ProductCategory] WITH CHECK ADD 
     CONSTRAINT [PK_ProductCategory_ProductCategoryID] PRIMARY KEY CLUSTERED 
     (
         [ProductCategoryID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[ProductDescription] WITH CHECK ADD 
+ALTER TABLE [ProductDescription] WITH CHECK ADD 
     CONSTRAINT [PK_ProductDescription_ProductDescriptionID] PRIMARY KEY CLUSTERED 
     (
         [ProductDescriptionID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[ProductModel] WITH CHECK ADD 
+ALTER TABLE [ProductModel] WITH CHECK ADD 
     CONSTRAINT [PK_ProductModel_ProductModelID] PRIMARY KEY CLUSTERED 
     (
         [ProductModelID]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD 
+ALTER TABLE [ProductModelProductDescription] WITH CHECK ADD 
     CONSTRAINT [PK_ProductModelProductDescription_ProductModelID_ProductDescriptionID_Culture] PRIMARY KEY CLUSTERED 
     (
         [ProductModelID],
@@ -392,7 +387,7 @@ ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD
 GO
 
 
-ALTER TABLE [SalesLT].[SalesOrderDetail] WITH CHECK ADD 
+ALTER TABLE [SalesOrderDetail] WITH CHECK ADD 
     CONSTRAINT [PK_SalesOrderDetail_SalesOrderID_SalesOrderDetailID] PRIMARY KEY CLUSTERED 
     (
         [SalesOrderID],
@@ -400,7 +395,7 @@ ALTER TABLE [SalesLT].[SalesOrderDetail] WITH CHECK ADD
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[SalesOrderHeader] WITH CHECK ADD 
+ALTER TABLE [SalesOrderHeader] WITH CHECK ADD 
     CONSTRAINT [PK_SalesOrderHeader_SalesOrderID] PRIMARY KEY CLUSTERED 
     (
         [SalesOrderID]
@@ -415,35 +410,35 @@ PRINT '';
 PRINT '*** Adding Unique Constraints';
 GO
 
-ALTER TABLE [SalesLT].[Address] WITH CHECK ADD 
+ALTER TABLE [Address] WITH CHECK ADD 
     CONSTRAINT [AK_Address_rowguid] UNIQUE 
     (
         [rowguid]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[Customer] WITH CHECK ADD 
+ALTER TABLE [Customer] WITH CHECK ADD 
     CONSTRAINT [AK_Customer_rowguid] UNIQUE 
     (
         [rowguid]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[CustomerAddress] WITH CHECK ADD 
+ALTER TABLE [CustomerAddress] WITH CHECK ADD 
     CONSTRAINT [AK_CustomerAddress_rowguid] UNIQUE 
     (
         [rowguid]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[Product] WITH CHECK ADD 
+ALTER TABLE [Product] WITH CHECK ADD 
     CONSTRAINT [AK_Product_ProductNumber] UNIQUE 
     (
         [ProductNumber]
     ) ,
 	CONSTRAINT [AK_Product_Name] UNIQUE
 	(
-		[Name]
+		TEXT
 	),
 	CONSTRAINT [AK_Product_rowguid] UNIQUE
 	(
@@ -451,10 +446,10 @@ ALTER TABLE [SalesLT].[Product] WITH CHECK ADD
 	);
 GO
 
-ALTER TABLE [SalesLT].[ProductCategory] WITH CHECK ADD 
+ALTER TABLE [ProductCategory] WITH CHECK ADD 
     CONSTRAINT [AK_ProductCategory_Name] UNIQUE 
     (
-        [Name]
+        TEXT
     ) ,
 	CONSTRAINT [AK_ProductCategory_rowguid] UNIQUE
 	(
@@ -462,17 +457,17 @@ ALTER TABLE [SalesLT].[ProductCategory] WITH CHECK ADD
 	);
 GO
 
-ALTER TABLE [SalesLT].[ProductDescription] WITH CHECK ADD 
+ALTER TABLE [ProductDescription] WITH CHECK ADD 
     CONSTRAINT [AK_ProductDescription_rowguid] UNIQUE 
     (
         [rowguid]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[ProductModel] WITH CHECK ADD 
+ALTER TABLE [ProductModel] WITH CHECK ADD 
     CONSTRAINT [AK_ProductModel_Name] UNIQUE 
     (
-        [Name]
+        TEXT
     ) ,
 	CONSTRAINT [AK_ProductModel_rowguid] UNIQUE
 	(
@@ -480,7 +475,7 @@ ALTER TABLE [SalesLT].[ProductModel] WITH CHECK ADD
 	);
 GO
 
-ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD 
+ALTER TABLE [ProductModelProductDescription] WITH CHECK ADD 
 	CONSTRAINT [AK_ProductModelProductDescription_rowguid] UNIQUE
 	(
 		[rowguid]
@@ -488,14 +483,14 @@ ALTER TABLE [SalesLT].[ProductModelProductDescription] WITH CHECK ADD
 GO
 
 
-ALTER TABLE [SalesLT].[SalesOrderDetail] WITH CHECK ADD 
+ALTER TABLE [SalesOrderDetail] WITH CHECK ADD 
     CONSTRAINT [AK_SalesOrderDetail_rowguid] UNIQUE 
     (
         [rowguid]
     ) ;
 GO
 
-ALTER TABLE [SalesLT].[SalesOrderHeader] WITH CHECK ADD 
+ALTER TABLE [SalesOrderHeader] WITH CHECK ADD 
     CONSTRAINT [AK_SalesOrderHeader_SalesOrderNumber] UNIQUE 
     (
         [SalesOrderNumber]
@@ -514,18 +509,18 @@ PRINT '*** Adding Indexes';
 GO
 
 CREATE INDEX [IX_Address_AddressLine1_AddressLine2_City_StateProvince_PostalCode_CountryRegion] 
-	ON [SalesLT].[Address] ([AddressLine1], [AddressLine2], [City], [StateProvince], 
+	ON [Address] ([AddressLine1], [AddressLine2], [City], [StateProvince], 
 		[PostalCode], [CountryRegion]);
-CREATE INDEX [IX_Address_StateProvince] ON [SalesLT].[Address]([StateProvince]);
+CREATE INDEX [IX_Address_StateProvince] ON [Address]([StateProvince]);
 GO
 
-CREATE INDEX [IX_Customer_EmailAddress] ON [SalesLT].[Customer]([EmailAddress]);
+CREATE INDEX [IX_Customer_EmailAddress] ON [Customer]([EmailAddress]);
 GO
 
-CREATE INDEX [IX_SalesOrderDetail_ProductID] ON [SalesLT].[SalesOrderDetail]([ProductID]);
+CREATE INDEX [IX_SalesOrderDetail_ProductID] ON [SalesOrderDetail]([ProductID]);
 GO
 
-CREATE INDEX [IX_SalesOrderHeader_CustomerID] ON [SalesLT].[SalesOrderHeader]([CustomerID]);
+CREATE INDEX [IX_SalesOrderHeader_CustomerID] ON [SalesOrderHeader]([CustomerID]);
 GO
 
 
@@ -544,7 +539,7 @@ SET ANSI_WARNINGS ON;
 SET CONCAT_NULL_YIELDS_NULL ON;
 SET NUMERIC_ROUNDABORT OFF;
 
-CREATE PRIMARY XML INDEX [PXML_ProductModel_CatalogDescription] ON [SalesLT].[ProductModel]([CatalogDescription]);
+CREATE PRIMARY XML INDEX [PXML_ProductModel_CatalogDescription] ON [ProductModel]([CatalogDescription]);
 GO
 
 
@@ -555,96 +550,96 @@ PRINT '';
 PRINT '*** Creating Foreign Key Constraints';
 GO
 
-ALTER TABLE [SalesLT].[CustomerAddress] ADD 
+ALTER TABLE [CustomerAddress] ADD 
     CONSTRAINT [FK_CustomerAddress_Customer_CustomerID] FOREIGN KEY 
     (
         [CustomerID]
-    ) REFERENCES [SalesLT].[Customer](
+    ) REFERENCES [Customer](
         [CustomerID]
     ),
     CONSTRAINT [FK_CustomerAddress_Address_AddressID] FOREIGN KEY 
     (
         [AddressID]
-    ) REFERENCES [SalesLT].[Address](
+    ) REFERENCES [Address](
         [AddressID]
     );
 GO
 
-ALTER TABLE [SalesLT].[Product] ADD 
+ALTER TABLE [Product] ADD 
     CONSTRAINT [FK_Product_ProductModel_ProductModelID] FOREIGN KEY 
     (
         [ProductModelID]
-    ) REFERENCES [SalesLT].[ProductModel](
+    ) REFERENCES [ProductModel](
         [ProductModelID]
     ),
     CONSTRAINT [FK_Product_ProductCategory_ProductCategoryID] FOREIGN KEY 
     (
         [ProductCategoryID]
-    ) REFERENCES [SalesLT].[ProductCategory](
+    ) REFERENCES [ProductCategory](
         [ProductCategoryID]
     );
 GO
 
-ALTER TABLE [SalesLT].[ProductCategory] ADD 
+ALTER TABLE [ProductCategory] ADD 
     CONSTRAINT [FK_ProductCategory_ProductCategory_ParentProductCategoryID_ProductCategoryID] FOREIGN KEY 
     (
         [ParentProductCategoryID]
-    ) REFERENCES [SalesLT].[ProductCategory](
+    ) REFERENCES [ProductCategory](
         [ProductCategoryID]
     );
 GO
 
-ALTER TABLE [SalesLT].[ProductModelProductDescription] ADD 
+ALTER TABLE [ProductModelProductDescription] ADD 
     CONSTRAINT [FK_ProductModelProductDescription_ProductDescription_ProductDescriptionID] FOREIGN KEY 
     (
         [ProductDescriptionID]
-    ) REFERENCES [SalesLT].[ProductDescription](
+    ) REFERENCES [ProductDescription](
         [ProductDescriptionID]
     ),
     CONSTRAINT [FK_ProductModelProductDescription_ProductModel_ProductModelID] FOREIGN KEY 
     (
         [ProductModelID]
-    ) REFERENCES [SalesLT].[ProductModel](
+    ) REFERENCES [ProductModel](
         [ProductModelID]
     );
 GO
 
-ALTER TABLE [SalesLT].[SalesOrderDetail] ADD 
+ALTER TABLE [SalesOrderDetail] ADD 
     CONSTRAINT [FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID] FOREIGN KEY 
     (
         [SalesOrderID]
-    ) REFERENCES [SalesLT].[SalesOrderHeader](
+    ) REFERENCES [SalesOrderHeader](
         [SalesOrderID]
     ) ON DELETE CASCADE;
 
 GO
 
-ALTER TABLE [SalesLT].[SalesOrderDetail] ADD 
+ALTER TABLE [SalesOrderDetail] ADD 
     CONSTRAINT [FK_SalesOrderDetail_Product_ProductID] FOREIGN KEY 
     (
         [ProductID]
-    ) REFERENCES [SalesLT].[Product](
+    ) REFERENCES [Product](
         [ProductID]
     );
 GO
 
-ALTER TABLE [SalesLT].[SalesOrderHeader] ADD 
+ALTER TABLE [SalesOrderHeader] ADD 
     CONSTRAINT [FK_SalesOrderHeader_Customer_CustomerID] FOREIGN KEY 
     (
         [CustomerID]
-    ) REFERENCES [SalesLT].[Customer](
+    ) REFERENCES [Customer](
         [CustomerID]
 	),
     CONSTRAINT [FK_SalesOrderHeader_Address_ShipTo_AddressID] FOREIGN KEY 
     (
         [ShipToAddressID]
-    ) REFERENCES [SalesLT].[Address](
+    ) REFERENCES [Address](
         [AddressID]
     ),
     CONSTRAINT [FK_SalesOrderHeader_Address_BillTo_AddressID] FOREIGN KEY 
     (
         [BillToAddressID]
-    ) REFERENCES [SalesLT].[Address](
+    ) REFERENCES [Address](
         [AddressID]
     );
 GO
@@ -659,7 +654,7 @@ PRINT '*** Creating Table Triggers';
 GO
 
 
-CREATE TRIGGER [SalesLT].[iduSalesOrderDetail] ON [SalesLT].[SalesOrderDetail] 
+CREATE TRIGGER [iduSalesOrderDetail] ON [SalesOrderDetail] 
 AFTER INSERT, DELETE, UPDATE AS 
 BEGIN
     DECLARE @Count int;
@@ -676,12 +671,12 @@ BEGIN
 
         -- Update SubTotal in SalesOrderHeader record. Note that this causes the 
         -- SalesOrderHeader trigger to fire which will update the RevisionNumber.
-        UPDATE [SalesLT].[SalesOrderHeader]
-        SET [SalesLT].[SalesOrderHeader].[SubTotal] = 
-            (SELECT SUM([SalesLT].[SalesOrderDetail].[LineTotal])
-                FROM [SalesLT].[SalesOrderDetail]
-                WHERE [SalesLT].[SalesOrderHeader].[SalesOrderID] = [SalesLT].[SalesOrderDetail].[SalesOrderID])
-        WHERE [SalesLT].[SalesOrderHeader].[SalesOrderID] IN (SELECT inserted.[SalesOrderID] FROM inserted);
+        UPDATE [SalesOrderHeader]
+        SET [SalesOrderHeader].[SubTotal] = 
+            (SELECT SUM([SalesOrderDetail].[LineTotal])
+                FROM [SalesOrderDetail]
+                WHERE [SalesOrderHeader].[SalesOrderID] = [SalesOrderDetail].[SalesOrderID])
+        WHERE [SalesOrderHeader].[SalesOrderID] IN (SELECT inserted.[SalesOrderID] FROM inserted);
 
     END TRY
     BEGIN CATCH
@@ -699,7 +694,7 @@ BEGIN
 END;
 GO
 
-CREATE TRIGGER [SalesLT].[uSalesOrderHeader] ON [SalesLT].[SalesOrderHeader] 
+CREATE TRIGGER [uSalesOrderHeader] ON [SalesOrderHeader] 
 AFTER UPDATE AS 
 BEGIN
     DECLARE @Count int;
@@ -714,10 +709,10 @@ BEGIN
         -- Update RevisionNumber for modification of any field EXCEPT the Status.
         IF NOT (UPDATE([Status]) OR UPDATE([RevisionNumber]))
         BEGIN
-            UPDATE [SalesLT].[SalesOrderHeader]
-            SET [SalesLT].[SalesOrderHeader].[RevisionNumber] = 
-                [SalesLT].[SalesOrderHeader].[RevisionNumber] + 1
-            WHERE [SalesLT].[SalesOrderHeader].[SalesOrderID] IN 
+            UPDATE [SalesOrderHeader]
+            SET [SalesOrderHeader].[RevisionNumber] = 
+                [SalesOrderHeader].[RevisionNumber] + 1
+            WHERE [SalesOrderHeader].[SalesOrderID] IN 
                 (SELECT inserted.[SalesOrderID] FROM inserted);
         END;
     END TRY
@@ -745,34 +740,34 @@ PRINT '*** Creating Table Views';
 GO
 
 
-CREATE VIEW [SalesLT].[vProductAndDescription] 
+CREATE VIEW [vProductAndDescription] 
 WITH SCHEMABINDING 
 AS 
 -- View (indexed or standard) to display products and product descriptions by language.
 SELECT 
     p.[ProductID] 
-    ,p.[Name] 
-    ,pm.[Name] AS [ProductModel] 
+    ,p.TEXT 
+    ,pm.TEXT AS [ProductModel] 
     ,pmx.[Culture] 
     ,pd.[Description] 
-FROM [SalesLT].[Product] p 
-    INNER JOIN [SalesLT].[ProductModel] pm 
+FROM [Product] p 
+    INNER JOIN [ProductModel] pm 
     ON p.[ProductModelID] = pm.[ProductModelID] 
-    INNER JOIN [SalesLT].[ProductModelProductDescription] pmx 
+    INNER JOIN [ProductModelProductDescription] pmx 
     ON pm.[ProductModelID] = pmx.[ProductModelID] 
-    INNER JOIN [SalesLT].[ProductDescription] pd 
+    INNER JOIN [ProductDescription] pd 
     ON pmx.[ProductDescriptionID] = pd.[ProductDescriptionID];
 GO
 
 -- Index the vProductAndDescription view
-CREATE UNIQUE CLUSTERED INDEX [IX_vProductAndDescription] ON [SalesLT].[vProductAndDescription]([Culture], [ProductID]);
+CREATE UNIQUE CLUSTERED INDEX [IX_vProductAndDescription] ON [vProductAndDescription]([Culture], [ProductID]);
 GO
 
-CREATE VIEW [SalesLT].[vProductModelCatalogDescription] 
+CREATE VIEW [vProductModelCatalogDescription] 
 AS 
 SELECT 
     [ProductModelID] 
-    ,[Name] 
+    ,TEXT 
     ,[CatalogDescription].value(N'declare namespace p1="http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelDescription"; 
         declare namespace html="http://www.w3.org/1999/xhtml"; 
         (/p1:ProductDescription/p1:Summary/html:p)[1]', 'nvarchar(max)') AS [Summary] 
@@ -827,29 +822,29 @@ SELECT
         (/p1:ProductDescription/p1:Specifications/RiderExperience)[1]', 'nvarchar(1024)') AS [RiderExperience] 
     ,[rowguid] 
     ,[ModifiedDate]
-FROM [SalesLT].[ProductModel] 
+FROM [ProductModel] 
 WHERE [CatalogDescription] IS NOT NULL;
 GO
 
-CREATE VIEW [SalesLT].[vGetAllCategories]
+CREATE VIEW [vGetAllCategories]
 WITH SCHEMABINDING 
 AS 
 -- Returns the CustomerID, first name, and last name for the specified customer.
 
-WITH CategoryCTE([ParentProductCategoryID], [ProductCategoryID], [Name]) AS 
+WITH CategoryCTE([ParentProductCategoryID], [ProductCategoryID], TEXT) AS 
 (
-	SELECT [ParentProductCategoryID], [ProductCategoryID], [Name]
+	SELECT [ParentProductCategoryID], [ProductCategoryID], TEXT
 	FROM SalesLT.ProductCategory
 	WHERE ParentProductCategoryID IS NULL
 
 UNION ALL
 
-	SELECT C.[ParentProductCategoryID], C.[ProductCategoryID], C.[Name]
+	SELECT C.[ParentProductCategoryID], C.[ProductCategoryID], C.TEXT
 	FROM SalesLT.ProductCategory AS C
 	INNER JOIN CategoryCTE AS BC ON BC.ProductCategoryID = C.ParentProductCategoryID
 )
 
-SELECT PC.[Name] AS [ParentProductCategoryName], CCTE.[Name] as [ProductCategoryName], CCTE.[ProductCategoryID]  
+SELECT PC.TEXT AS [ParentProductCategoryName], CCTE.TEXT as [ProductCategoryName], CCTE.[ProductCategoryID]  
 FROM CategoryCTE AS CCTE
 JOIN SalesLT.ProductCategory AS PC 
 ON PC.[ProductCategoryID] = CCTE.[ParentProductCategoryID]
@@ -873,7 +868,7 @@ RETURN (
         CustomerID, 
         FirstName, 
         LastName
-    FROM [SalesLT].[Customer] 
+    FROM [Customer] 
     WHERE [CustomerID] = @CustomerID
 );
 GO
@@ -914,21 +909,21 @@ RETURNS @retCategoryInformation TABLE
 AS 
 -- Returns the CustomerID, first name, and last name for the specified customer.
 BEGIN
-	WITH CategoryCTE([ParentProductCategoryID], [ProductCategoryID], [Name]) AS 
+	WITH CategoryCTE([ParentProductCategoryID], [ProductCategoryID], TEXT) AS 
 	(
-		SELECT [ParentProductCategoryID], [ProductCategoryID], [Name]
+		SELECT [ParentProductCategoryID], [ProductCategoryID], TEXT
 		FROM SalesLT.ProductCategory
 		WHERE ParentProductCategoryID IS NULL
 
 	UNION ALL
 
-		SELECT C.[ParentProductCategoryID], C.[ProductCategoryID], C.[Name]
+		SELECT C.[ParentProductCategoryID], C.[ProductCategoryID], C.TEXT
 		FROM SalesLT.ProductCategory AS C
 		INNER JOIN CategoryCTE AS BC ON BC.ProductCategoryID = C.ParentProductCategoryID
 	)
 
 	INSERT INTO @retCategoryInformation
-	SELECT PC.[Name] AS [ParentProductCategoryName], CCTE.[Name] as [ProductCategoryName], CCTE.[ProductCategoryID]  
+	SELECT PC.TEXT AS [ParentProductCategoryName], CCTE.TEXT as [ProductCategoryName], CCTE.[ProductCategoryID]  
 	FROM CategoryCTE AS CCTE
 	JOIN SalesLT.ProductCategory AS PC 
 	ON PC.[ProductCategoryID] = CCTE.[ParentProductCategoryID];
@@ -1033,7 +1028,7 @@ GO
 
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Products sold or used in the manfacturing of sold products.', N'SCHEMA', [SalesLT], N'TABLE', [Product], NULL, NULL;
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key for Product records.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', [ProductID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Name of the product.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', [Name];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Name of the product.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', TEXT;
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Unique product identification number.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', [ProductNumber];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Product color.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', [Color];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Standard cost of the product.', N'SCHEMA', [SalesLT], N'TABLE', [Product], N'COLUMN', [StandardCost];
@@ -1054,7 +1049,7 @@ GO
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'High-level product categorization.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], NULL, NULL;
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Primary key for ProductCategory records.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', [ProductCategoryID];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Product category identification number of immediate ancestor category. Foreign key to ProductCategory.ProductCategoryID.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', [ParentProductCategoryID];
-EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Category description.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', [Name];
+EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Category description.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', TEXT;
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'ROWGUIDCOL number uniquely identifying the record. Used to support a merge replication sample.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', [rowguid];
 EXECUTE [sys].[sp_addextendedproperty] N'MS_Description', N'Date and time the record was last updated.', N'SCHEMA', [SalesLT], N'TABLE', [ProductCategory], N'COLUMN', [ModifiedDate];
 GO
