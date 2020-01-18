@@ -9,6 +9,7 @@ drop table Product;
 drop table ProductCategory;
 drop table ProductDescription;
 drop table ProductModel;
+drop table ProductModelProductDescription;
 
 CREATE TABLE [ErrorLog](
     [ErrorLogID] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -103,16 +104,12 @@ CREATE TABLE [ProductModel](
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
-
-
 CREATE TABLE [ProductModelProductDescription](
     [ProductModelID] INTEGER NOT NULL,
     [ProductDescriptionID] INTEGER NOT NULL,
-    [Culture] [nchar](6) NOT NULL, 
-    [rowguid] [uniqueidentifier] ROWGUIDCOL NOT NULL CONSTRAINT [DF_ProductModelProductDescription_rowguid] DEFAULT (NEWID()), 
-    [ModifiedDate] DATETIME NOT NULL CONSTRAINT [DF_ProductModelProductDescription_ModifiedDate] DEFAULT (datetime('now')) 
+    [Culture] TEXT NOT NULL, 
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
-GO
 
 CREATE TABLE [SalesOrderDetail](
     [SalesOrderID] INTEGER NOT NULL,
