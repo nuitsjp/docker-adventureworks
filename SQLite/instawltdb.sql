@@ -33,7 +33,7 @@ CREATE TABLE [BuildVersion](
 );
 
 CREATE TABLE [Address](
-    [AddressID] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [AddressID] INTEGER PRIMARY KEY,
     [AddressLine1] TEXT NOT NULL, 
     [AddressLine2] TEXT NULL, 
     [City] TEXT NOT NULL, 
@@ -61,14 +61,14 @@ CREATE TABLE [Customer](
 );
 
 CREATE TABLE [CustomerAddress](
-	[CustomerID] INTEGER NOT NULL,
+	[CustomerID] INTEGER PRIMARY KEY,
 	[AddressID] INTEGER NOT NULL,
 	[AddressType] TEXT NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE [Product](
-    [ProductID] INTEGER IDENTITY (1, 1) NOT NULL,
+    [ProductID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [Name] TEXT NOT NULL,
     [ProductNumber] TEXT NOT NULL, 
     [Color] TEXT NULL, 
@@ -87,20 +87,20 @@ CREATE TABLE [Product](
 );
 
 CREATE TABLE [ProductCategory](
-    [ProductCategoryID] INTEGER IDENTITY (1, 1) NOT NULL,
+    [ProductCategoryID] INTEGER PRIMARY KEY AUTOINCREMENT,
 	[ParentProductCategoryID] INTEGER NULL,
     TEXT TEXT NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
 CREATE TABLE [ProductDescription](
-    [ProductDescriptionID] INTEGER IDENTITY (1, 1) NOT NULL,
+    [ProductDescriptionID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [Description] TEXT NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
 CREATE TABLE [ProductModel](
-    [ProductModelID] INTEGER IDENTITY (1, 1) NOT NULL,
+    [ProductModelID] INTEGER PRIMARY KEY AUTOINCREMENT,
     TEXT TEXT NOT NULL,
     [CatalogDescription] TEXT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
