@@ -25,6 +25,7 @@ CREATE TABLE [Address](
     [StateProvince] TEXT NOT NULL,
 	[CountryRegion] TEXT NOT NULL,
     [PostalCode] TEXT NOT NULL, 
+    [rowguid] TEXT UNIQUE NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -42,6 +43,7 @@ CREATE TABLE [Customer](
     [Phone] TEXT NULL, 
     [PasswordHash] TEXT NOT NULL, 
     [PasswordSalt] TEXT NOT NULL,
+    [rowguid] TEXT UNIQUE NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -49,13 +51,17 @@ CREATE TABLE [CustomerAddress](
 	[CustomerID] INTEGER  NOT NULL,
 	[AddressID] INTEGER NOT NULL,
 	[AddressType] TEXT NOT NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+	PRIMARY KEY ([CustomerID], [AddressID]),
+    FOREIGN KEY ([CustomerID]) REFERENCES [Customer](CustomerID),
+    FOREIGN KEY ([AddressID]) REFERENCES [Address](AddressID)
 );
 
 CREATE TABLE [Product](
     [ProductID] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [Name] TEXT NOT NULL,
-    [ProductNumber] TEXT NOT NULL, 
+    [Name] TEXT UNIQUE NOT NULL,
+    [ProductNumber] TEXT UNIQUE NOT NULL, 
     [Color] TEXT NULL, 
     [StandardCost] INTEGER NOT NULL,
     [ListPrice] INTEGER NOT NULL,
@@ -68,26 +74,33 @@ CREATE TABLE [Product](
     [DiscontinuedDate] DATETIME NULL,
     [ThumbNailPhoto] BLOB NULL,
     [ThumbnailPhotoFileName] TEXT NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ([ProductModelID]) REFERENCES [ProductModel](ProductModelID),
+    FOREIGN KEY ([ProductCategoryID]) REFERENCES [ProductCategory](ProductCategoryID)
 );
 
 CREATE TABLE [ProductCategory](
     [ProductCategoryID] INTEGER PRIMARY KEY AUTOINCREMENT,
 	[ParentProductCategoryID] INTEGER NULL,
-    TEXT TEXT NOT NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
+    [Name] TEXT UNIQUE NOT NULL,
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ([ParentProductCategoryID]) REFERENCES [ProductCategory](ProductCategoryID)
 );
 
 CREATE TABLE [ProductDescription](
     [ProductDescriptionID] INTEGER PRIMARY KEY AUTOINCREMENT,
     [Description] TEXT NOT NULL,
+    [rowguid] TEXT UNIQUE NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
 CREATE TABLE [ProductModel](
     [ProductModelID] INTEGER PRIMARY KEY AUTOINCREMENT,
-    TEXT TEXT NOT NULL,
+    [Name] TEXT UNIQUE NOT NULL,
     [CatalogDescription] TEXT NULL,
+    [rowguid] TEXT UNIQUE NOT NULL,
     [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
 );
 
@@ -95,7 +108,11 @@ CREATE TABLE [ProductModelProductDescription](
     [ProductModelID] INTEGER NOT NULL,
     [ProductDescriptionID] INTEGER NOT NULL,
     [Culture] TEXT NOT NULL, 
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')) 
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+	PRIMARY KEY ([ProductModelID], [ProductDescriptionID], [Culture]),
+    FOREIGN KEY ([ProductDescriptionID]) REFERENCES [ProductDescription](ProductDescriptionID),
+    FOREIGN KEY ([ProductModelID]) REFERENCES [ProductModel](ProductModelID)
 );
 
 CREATE TABLE [SalesOrderDetail](
@@ -105,8 +122,12 @@ CREATE TABLE [SalesOrderDetail](
     [ProductID] INTEGER NOT NULL,
     [UnitPrice] INTEGER NOT NULL,
     [UnitPriceDiscount] INTEGER NOT NULL DEFAULT (0.0),
-    --[LineTotal] AS ISNULL([UnitPrice] * (1.0 - [UnitPriceDiscount]) * [OrderQty], 0.0),
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+    [LineTotal] INTEGER NOT NULL,
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+	PRIMARY KEY ([SalesOrderID], [SalesOrderDetailID]),
+    FOREIGN KEY ([SalesOrderID]) REFERENCES [SalesOrderHeader](SalesOrderID),
+    FOREIGN KEY ([ProductID]) REFERENCES [Product](ProductID)
 );
 
 CREATE TABLE [SalesOrderHeader](
@@ -117,7 +138,7 @@ CREATE TABLE [SalesOrderHeader](
     [ShipDate] DATETIME NULL,
     [Status] INTEGER NOT NULL DEFAULT (1),
     [OnlineOrderFlag] INTEGER NOT NULL DEFAULT (1),
-    --[SalesOrderNumber] AS ISNULL(N'SO' + CONVERT(nvarchar(23), [SalesOrderID]), N'*** ERROR ***'), 
+    [SalesOrderNumber] TEXT UNIQUE NOT NULL, 
     [PurchaseOrderNumber] INTEGER NULL,
     [AccountNumber] TEXT NULL,
     [CustomerID] INTEGER NOT NULL,
@@ -128,7 +149,34 @@ CREATE TABLE [SalesOrderHeader](
     [SubTotal] INTEGER NOT NULL DEFAULT (0.00),
     [TaxAmt] INTEGER NOT NULL DEFAULT (0.00),
     [Freight] INTEGER NOT NULL DEFAULT (0.00),
-    --[TotalDue] AS ISNULL([SubTotal] + [TaxAmt] + [Freight], 0),
+    [TotalDue] INTEGER NOT NULL,
     [Comment] TEXT NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now'))
+    [rowguid] TEXT UNIQUE NOT NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ([CustomerID]) REFERENCES [Customer](CustomerID),
+    FOREIGN KEY ([ShipToAddressID]) REFERENCES [Address](AddressID),
+    FOREIGN KEY ([BillToAddressID]) REFERENCES [Address](AddressID)
 );
+
+.separator \t 
+.import Address.csv Address
+.import BuildVersion.csv BuildVersion
+.import Customer.csv Customer
+.import CustomerAddress.csv CustomerAddress
+.import Product.csv Product
+.import ProductCategory.csv ProductCategory
+.import ProductDescription.csv ProductDescription
+.import ProductModel.csv ProductModel
+.import ProductModelProductDescription.csv ProductModelProductDescription
+.import SalesOrderDetail.csv SalesOrderDetail
+.import SalesOrderHeader.csv SalesOrderHeader
+
+CREATE INDEX [IX_Address_AddressLine1_AddressLine2_City_StateProvince_PostalCode_CountryRegion] 
+	ON [Address] ([AddressLine1], [AddressLine2], [City], [StateProvince], [PostalCode], [CountryRegion]);
+CREATE INDEX [IX_Address_StateProvince] ON [Address]([StateProvince]);
+
+CREATE INDEX [IX_Customer_EmailAddress] ON [Customer]([EmailAddress]);
+
+CREATE INDEX [IX_SalesOrderDetail_ProductID] ON [SalesOrderDetail]([ProductID]);
+
+CREATE INDEX [IX_SalesOrderHeader_CustomerID] ON [SalesOrderHeader]([CustomerID]);
