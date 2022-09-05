@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/mssql/server:2022-latest
+FROM mcr.microsoft.com/mssql/server:2022-latest as Builder
 WORKDIR /work/
 COPY build/ .
 RUN /bin/bash ./setup.sh
